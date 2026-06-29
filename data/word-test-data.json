@@ -1,0 +1,437 @@
+{
+  "words": [
+    {
+      "en": "journey",
+      "zh": "旅行"
+    },
+    {
+      "en": "improve",
+      "zh": "提高，改善"
+    },
+    {
+      "en": "environment",
+      "zh": "环境"
+    },
+    {
+      "en": "confident",
+      "zh": "自信的"
+    },
+    {
+      "en": "discover",
+      "zh": "发现"
+    },
+    {
+      "en": "habit",
+      "zh": "习惯"
+    },
+    {
+      "en": "creative",
+      "zh": "有创造力的"
+    },
+    {
+      "en": "memory",
+      "zh": "记忆"
+    }
+  ],
+  "article": "Last summer, Lily joined a reading club in her neighborhood. At first, she was not confident because the books were difficult. Her teacher told her to build a daily reading habit and write down new words. After three months, Lily discovered that her memory improved. She also became more creative when she wrote stories for class. The journey helped her understand that small steps can bring big changes.",
+  "mistakes": [
+    {
+      "id": "mistake-log-1782730020760-991ac804a42cf8",
+      "reviewId": "mistake-1782730020760-8236016e729a8",
+      "source": "article",
+      "mode": "choice",
+      "type": "阅读理解",
+      "title": "莉莉去年夏天参加了什么？",
+      "answer": "阅读俱乐部",
+      "userAnswer": "绘画俱乐部",
+      "explanation": "原文第一句提到莉莉加入了阅读俱乐部。",
+      "time": "2026/6/29 18:47:00",
+      "createdAt": 1782730020760,
+      "reviewQuestion": {
+        "source": "article",
+        "mode": "choice",
+        "word": "",
+        "title": "莉莉去年夏天参加了什么？",
+        "meta": "AI 生成 · 选择题",
+        "context": "Last summer, Lily joined a reading club in her neighborhood.",
+        "answer": "阅读俱乐部",
+        "explanation": "原文第一句提到莉莉加入了阅读俱乐部。",
+        "memoryWord": null,
+        "type": "阅读理解",
+        "options": [
+          "音乐俱乐部",
+          "绘画俱乐部",
+          "阅读俱乐部",
+          "写作俱乐部"
+        ]
+      }
+    },
+    {
+      "id": "mistake-log-1782725014352-fb5a72932e516",
+      "reviewId": "mistake-1782725014352-1d23d1feb846e8",
+      "source": "article",
+      "mode": "choice",
+      "type": "网站模型题 · 阅读定位题",
+      "title": "Which option is supported by the article?",
+      "answer": "Last summer, Lily joined a reading club in her neighborhood.",
+      "userAnswer": "The main character traveled to space.",
+      "explanation": "可从原文找到：Last summer, Lily joined a reading club in her neighborhood.（AI 失败后使用网站模型题，高难度显示为英文题面和英文选项。）",
+      "time": "2026/6/29 17:23:34",
+      "createdAt": 1782725014352,
+      "reviewQuestion": {
+        "source": "article",
+        "mode": "choice",
+        "word": "",
+        "title": "Which option is supported by the article?",
+        "meta": "网站模型题 · AI 失败自动切换",
+        "context": "",
+        "answer": "Last summer, Lily joined a reading club in her neighborhood.",
+        "explanation": "可从原文找到：Last summer, Lily joined a reading club in her neighborhood.（AI 失败后使用网站模型题，高难度显示为英文题面和英文选项。）",
+        "memoryWord": null,
+        "type": "网站模型题 · 阅读定位题",
+        "options": [
+          "The article only lists random words.",
+          "The article does not support this idea.",
+          "Last summer, Lily joined a reading club in her neighborhood.",
+          "The main character traveled to space."
+        ]
+      }
+    },
+    {
+      "id": "mistake-log-1782725001051-9fd934b166fb9",
+      "reviewId": "mistake-1782725001051-bc1f4d9ed1c9",
+      "source": "word",
+      "mode": "choice",
+      "type": "看中文选英文",
+      "title": "“有创造力的” 对应哪个英文单词？",
+      "answer": "creative",
+      "userAnswer": "complete",
+      "explanation": "中文“有创造力的”对应英文单词 “creative”。",
+      "time": "2026/6/29 17:23:21",
+      "createdAt": 1782725001051,
+      "reviewQuestion": {
+        "source": "word",
+        "mode": "choice",
+        "word": "",
+        "title": "“有创造力的” 对应哪个英文单词？",
+        "meta": "",
+        "context": "",
+        "answer": "creative",
+        "explanation": "中文“有创造力的”对应英文单词 “creative”。",
+        "memoryWord": {
+          "en": "creative",
+          "zh": "有创造力的"
+        },
+        "type": "看中文选英文",
+        "options": [
+          "important",
+          "environment",
+          "creative",
+          "complete"
+        ]
+      }
+    },
+    {
+      "id": "mistake-log-1782724999101-cb939d0cc9b34",
+      "reviewId": "mistake-1782724999101-bf0b2aa81e6d7",
+      "source": "word",
+      "mode": "choice",
+      "type": "基础词义题",
+      "title": "请选择 “memory” 的中文意思。",
+      "answer": "记忆",
+      "userAnswer": "变化",
+      "explanation": "“memory” 的常用中文意思是“记忆”。",
+      "time": "2026/6/29 17:23:19",
+      "createdAt": 1782724999101,
+      "reviewQuestion": {
+        "source": "word",
+        "mode": "choice",
+        "word": "memory",
+        "title": "请选择 “memory” 的中文意思。",
+        "meta": "",
+        "context": "",
+        "answer": "记忆",
+        "explanation": "“memory” 的常用中文意思是“记忆”。",
+        "memoryWord": {
+          "en": "memory",
+          "zh": "记忆"
+        },
+        "type": "基础词义题",
+        "options": [
+          "有创造力的",
+          "变化",
+          "记忆",
+          "旅行"
+        ]
+      }
+    },
+    {
+      "id": "mistake-log-1782724990386-49cbca7d29b2d",
+      "reviewId": "mistake-1782724990386-9d44fec98406a8",
+      "source": "word",
+      "mode": "choice",
+      "type": "高阶回忆题",
+      "title": "只根据中文意思选择英文：环境",
+      "answer": "environment",
+      "userAnswer": "complete",
+      "explanation": "高难度题不在题干里直接提示英文，正确英文是 “environment”。",
+      "time": "2026/6/29 17:23:10",
+      "createdAt": 1782724990386,
+      "reviewQuestion": {
+        "source": "word",
+        "mode": "choice",
+        "word": "",
+        "title": "只根据中文意思选择英文：环境",
+        "meta": "",
+        "context": "",
+        "answer": "environment",
+        "explanation": "高难度题不在题干里直接提示英文，正确英文是 “environment”。",
+        "memoryWord": {
+          "en": "environment",
+          "zh": "环境"
+        },
+        "type": "高阶回忆题",
+        "options": [
+          "improve",
+          "environment",
+          "confident",
+          "complete"
+        ]
+      }
+    }
+  ],
+  "memory": [
+    {
+      "kind": "mistake",
+      "reviewId": "mistake-1782730020760-8236016e729a8",
+      "title": "莉莉去年夏天参加了什么？",
+      "source": "article",
+      "question": {
+        "source": "article",
+        "mode": "choice",
+        "word": "",
+        "title": "莉莉去年夏天参加了什么？",
+        "meta": "AI 生成 · 选择题",
+        "context": "Last summer, Lily joined a reading club in her neighborhood.",
+        "answer": "阅读俱乐部",
+        "explanation": "原文第一句提到莉莉加入了阅读俱乐部。",
+        "memoryWord": null,
+        "type": "阅读理解",
+        "options": [
+          "音乐俱乐部",
+          "绘画俱乐部",
+          "阅读俱乐部",
+          "写作俱乐部"
+        ]
+      },
+      "stage": 0,
+      "wrong": 1,
+      "nextAt": 1782730020760,
+      "createdAt": 1782730020760,
+      "updatedAt": 1782730020760
+    },
+    {
+      "kind": "mistake",
+      "reviewId": "mistake-1782725014352-1d23d1feb846e8",
+      "title": "Which option is supported by the article?",
+      "source": "article",
+      "question": {
+        "source": "article",
+        "mode": "choice",
+        "word": "",
+        "title": "Which option is supported by the article?",
+        "meta": "网站模型题 · AI 失败自动切换",
+        "context": "",
+        "answer": "Last summer, Lily joined a reading club in her neighborhood.",
+        "explanation": "可从原文找到：Last summer, Lily joined a reading club in her neighborhood.（AI 失败后使用网站模型题，高难度显示为英文题面和英文选项。）",
+        "memoryWord": null,
+        "type": "网站模型题 · 阅读定位题",
+        "options": [
+          "The article only lists random words.",
+          "The article does not support this idea.",
+          "Last summer, Lily joined a reading club in her neighborhood.",
+          "The main character traveled to space."
+        ]
+      },
+      "stage": 0,
+      "wrong": 1,
+      "nextAt": 1782725014352,
+      "createdAt": 1782725014352,
+      "updatedAt": 1782725014352
+    },
+    {
+      "kind": "mistake",
+      "reviewId": "mistake-1782725001051-bc1f4d9ed1c9",
+      "title": "“有创造力的” 对应哪个英文单词？",
+      "source": "word",
+      "question": {
+        "source": "word",
+        "mode": "choice",
+        "word": "",
+        "title": "“有创造力的” 对应哪个英文单词？",
+        "meta": "",
+        "context": "",
+        "answer": "creative",
+        "explanation": "中文“有创造力的”对应英文单词 “creative”。",
+        "memoryWord": {
+          "en": "creative",
+          "zh": "有创造力的"
+        },
+        "type": "看中文选英文",
+        "options": [
+          "important",
+          "environment",
+          "creative",
+          "complete"
+        ]
+      },
+      "stage": 0,
+      "wrong": 1,
+      "nextAt": 1782725001051,
+      "createdAt": 1782725001051,
+      "updatedAt": 1782725001051
+    },
+    {
+      "kind": "mistake",
+      "reviewId": "mistake-1782724999101-bf0b2aa81e6d7",
+      "title": "请选择 “memory” 的中文意思。",
+      "source": "word",
+      "question": {
+        "source": "word",
+        "mode": "choice",
+        "word": "memory",
+        "title": "请选择 “memory” 的中文意思。",
+        "meta": "",
+        "context": "",
+        "answer": "记忆",
+        "explanation": "“memory” 的常用中文意思是“记忆”。",
+        "memoryWord": {
+          "en": "memory",
+          "zh": "记忆"
+        },
+        "type": "基础词义题",
+        "options": [
+          "有创造力的",
+          "变化",
+          "记忆",
+          "旅行"
+        ]
+      },
+      "stage": 0,
+      "wrong": 1,
+      "nextAt": 1782724999101,
+      "createdAt": 1782724999101,
+      "updatedAt": 1782724999101
+    },
+    {
+      "kind": "mistake",
+      "reviewId": "mistake-1782724990386-9d44fec98406a8",
+      "title": "只根据中文意思选择英文：环境",
+      "source": "word",
+      "question": {
+        "source": "word",
+        "mode": "choice",
+        "word": "",
+        "title": "只根据中文意思选择英文：环境",
+        "meta": "",
+        "context": "",
+        "answer": "environment",
+        "explanation": "高难度题不在题干里直接提示英文，正确英文是 “environment”。",
+        "memoryWord": {
+          "en": "environment",
+          "zh": "环境"
+        },
+        "type": "高阶回忆题",
+        "options": [
+          "improve",
+          "environment",
+          "confident",
+          "complete"
+        ]
+      },
+      "stage": 0,
+      "wrong": 1,
+      "nextAt": 1782724990386,
+      "createdAt": 1782724990386,
+      "updatedAt": 1782724990386
+    },
+    {
+      "kind": "word",
+      "en": "journey",
+      "zh": "旅行",
+      "stage": 0,
+      "wrong": 2,
+      "nextAt": 1782723143864,
+      "createdAt": 1782723094640,
+      "updatedAt": 1782723143864
+    },
+    {
+      "en": "confident",
+      "zh": "自信的",
+      "stage": 0,
+      "wrong": 3,
+      "nextAt": 1782724157977,
+      "createdAt": 1782721724184,
+      "updatedAt": 1782724157977
+    },
+    {
+      "en": "habit",
+      "zh": "习惯",
+      "stage": 0,
+      "wrong": 3,
+      "nextAt": 1782723113893,
+      "createdAt": 1782721724184,
+      "updatedAt": 1782723113893
+    },
+    {
+      "en": "discover",
+      "zh": "发现",
+      "stage": 0,
+      "wrong": 2,
+      "nextAt": 1782721724184,
+      "createdAt": 1782721716618
+    },
+    {
+      "en": "creative",
+      "zh": "有创造力的",
+      "stage": 0,
+      "wrong": 3,
+      "nextAt": 1782725001051,
+      "createdAt": 1782721713603,
+      "updatedAt": 1782725001051
+    },
+    {
+      "en": "environment",
+      "zh": "环境",
+      "stage": 0,
+      "wrong": 6,
+      "nextAt": 1782724990386,
+      "createdAt": 1782721713603,
+      "updatedAt": 1782724990386
+    },
+    {
+      "en": "improve",
+      "zh": "提高，改善",
+      "stage": 0,
+      "wrong": 6,
+      "nextAt": 1782723136753,
+      "createdAt": 1782721707535,
+      "updatedAt": 1782723136753
+    },
+    {
+      "en": "memory",
+      "zh": "记忆",
+      "stage": 0,
+      "wrong": 5,
+      "nextAt": 1782724999101,
+      "createdAt": 1782721706082,
+      "updatedAt": 1782724999101
+    }
+  ],
+  "sessions": [],
+  "stats": {
+    "answered": 7,
+    "correct": 2
+  },
+  "updatedAt": 1782730020760
+}

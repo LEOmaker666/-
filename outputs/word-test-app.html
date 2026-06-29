@@ -1,0 +1,4442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>单词课测试软件</title>
+  <style>
+    :root {
+      --bg: #f4f0e8;
+      --paper: #f4f0e8;
+      --panel: rgba(255, 253, 248, .82);
+      --text: #111111;
+      --muted: #74706a;
+      --line: #ded6ca;
+      --strong-line: #9c7448;
+      --brand: #111111;
+      --brand-soft: #efe5d7;
+      --gold: #9c7448;
+      --gold-dark: #7a5632;
+      --green: #177245;
+      --green-soft: #e8f7ec;
+      --red: #b42318;
+      --red-soft: #fff1ee;
+      --amber: #8a5a00;
+      --amber-soft: #fff6d6;
+      --shadow: 0 18px 46px rgba(54, 45, 34, .12);
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 26% 10%, rgba(255,255,255,.9), transparent 30%),
+        var(--bg);
+      font-family: "Arial Black", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      line-height: 1.5;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background: transparent;
+    }
+
+    button, input, textarea, select { font: inherit; }
+    button { border: 0; cursor: pointer; }
+
+    textarea, input, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(255,255,252,.88);
+      color: var(--text);
+      outline: none;
+      transition: border .18s, box-shadow .18s;
+    }
+
+    textarea:focus, input:focus, select:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 4px rgba(156, 116, 72, .12);
+    }
+
+    textarea {
+      min-height: 250px;
+      padding: 14px;
+      resize: vertical;
+    }
+
+    textarea.compact-textarea {
+      min-height: 110px;
+    }
+
+    input, select {
+      min-height: 44px;
+      padding: 0 12px;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 26px clamp(22px, 4.2vw, 58px) 76px;
+      overflow: hidden;
+      border-radius: 0;
+      background:
+        radial-gradient(circle at 24% 8%, rgba(255,255,255,.9), transparent 28%),
+        linear-gradient(180deg, rgba(255,255,255,.76), rgba(255,255,255,.24)),
+        var(--paper);
+      box-shadow: none;
+    }
+
+    .app::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(60,45,30,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(60,45,30,.02) 1px, transparent 1px);
+      background-size: 34px 34px;
+      opacity: .7;
+    }
+
+    .app::after {
+      content: "";
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: -1;
+      height: clamp(90px, 14vw, 156px);
+      pointer-events: none;
+      background: transparent;
+      opacity: 1;
+    }
+
+    .wave-soft,
+    .wave-dark { display: none; }
+
+    .home-wave {
+      position: fixed;
+      z-index: -1;
+      bottom: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .home-wave::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 50% 50% 0 0 / 70% 70% 0 0;
+    }
+
+    .home-wave.left-soft {
+      left: -14%;
+      width: 54%;
+      height: clamp(50px, 7vw, 78px);
+    }
+
+    .home-wave.left-soft::before {
+      bottom: -58%;
+      background: rgba(232, 223, 211, .9);
+      transform: rotate(8deg);
+    }
+
+    .home-wave.left-dark {
+      left: -12%;
+      width: 38%;
+      height: clamp(34px, 5vw, 54px);
+    }
+
+    .home-wave.left-dark::before {
+      bottom: -60%;
+      background: #1d1d1b;
+      transform: rotate(9deg);
+    }
+
+    .home-wave.right-soft {
+      right: -14%;
+      width: 54%;
+      height: clamp(62px, 8vw, 94px);
+    }
+
+    .home-wave.right-soft::before {
+      bottom: -56%;
+      background: rgba(232, 223, 211, .9);
+      transform: rotate(-8deg);
+    }
+
+    .home-wave.right-dark {
+      right: -10%;
+      width: 36%;
+      height: clamp(46px, 7vw, 72px);
+    }
+
+    .home-wave.right-dark::before {
+      bottom: -58%;
+      background: #1d1d1b;
+      transform: rotate(-8deg);
+    }
+
+    .topbar {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      min-height: 46px;
+      margin-bottom: clamp(18px, 3vw, 40px);
+      padding: 0;
+      border-bottom: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      min-width: 0;
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-weight: 800;
+      align-self: flex-start;
+    }
+
+    .brand-title {
+      font-size: clamp(15px, 1.7vw, 21px);
+      white-space: nowrap;
+    }
+
+    .logo-wrap {
+      display: none;
+    }
+
+    .logo {
+      display: block;
+      width: 96px;
+      height: 48px;
+      object-fit: contain;
+      object-position: left center;
+      flex: 0 0 auto;
+      filter: contrast(1.35);
+    }
+
+    h1 {
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: clamp(42px, 7vw, 76px);
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-top: 16px;
+      font-size: clamp(16px, 2vw, 23px);
+      letter-spacing: .08em;
+    }
+
+    .tabs {
+      display: flex;
+      align-items: center;
+      gap: clamp(18px, 4vw, 48px);
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      overflow: hidden;
+    }
+
+    .tab {
+      position: relative;
+      min-height: 34px;
+      padding: 0 2px;
+      border-radius: 0;
+      border-right: 0;
+      color: #2d2b28;
+      background: transparent;
+      white-space: nowrap;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .tab::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -5px;
+      width: 0;
+      height: 2px;
+      background: var(--gold);
+      transform: translateX(-50%);
+      transition: width .18s ease;
+    }
+
+    .tab.active,
+    .tab:hover {
+      color: var(--text);
+      background: transparent;
+    }
+
+    .tab.active::after,
+    .tab:hover::after { width: 42px; }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    main {
+      position: relative;
+      z-index: 2;
+    }
+
+    .home-screen {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding-top: 0;
+    }
+
+    .home-screen > :not(.home-wave) {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-symbol {
+      display: inline-grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 18px;
+      color: var(--gold);
+      margin-bottom: 16px;
+      font-size: 28px;
+    }
+
+    .hero-symbol::before,
+    .hero-symbol::after {
+      content: "";
+      width: 54px;
+      height: 1px;
+      background: color-mix(in srgb, var(--gold) 32%, transparent);
+    }
+
+    .panel, .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .panel {
+      position: relative;
+      padding: 20px;
+      background: #fffefb;
+    }
+
+    .config-panel {
+      width: min(1040px, 100%);
+      margin: 0 auto;
+      padding: clamp(28px, 4vw, 42px);
+      border-color: rgba(17,17,17,.1);
+      background: rgba(255, 253, 248, .62);
+      box-shadow: none;
+    }
+
+    .config-panel .section-title {
+      margin-bottom: 24px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid rgba(17,17,17,.1);
+    }
+
+    .config-panel h2 {
+      font-size: clamp(34px, 4.8vw, 58px);
+      font-weight: 900;
+      line-height: .9;
+      letter-spacing: 0;
+      transform: scaleX(1.04);
+      transform-origin: left center;
+    }
+
+    .config-panel .hint {
+      max-width: 620px;
+      margin-top: 12px;
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 14px;
+      color: #706a62;
+    }
+
+    .config-panel .setting-grid {
+      grid-template-columns: 1.05fr 1fr 1fr;
+      gap: 0;
+      border: 1px solid rgba(17,17,17,.14);
+      border-radius: 16px;
+      overflow: hidden;
+      background: rgba(255,255,252,.74);
+    }
+
+    .config-panel .setting-box {
+      border: 0;
+      border-right: 1px solid rgba(17,17,17,.12);
+      border-radius: 0;
+      background: transparent;
+      padding: 22px;
+    }
+
+    .config-panel .setting-box:last-child { border-right: 0; }
+
+    .config-panel h3 {
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+
+    .config-panel select {
+      min-height: 52px;
+      border-radius: 10px;
+      border-color: rgba(17,17,17,.16);
+      background: rgba(255,255,252,.9);
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .config-panel label {
+      position: relative;
+      align-items: center;
+      min-height: 38px;
+      padding-left: 2px;
+      font-size: 16px;
+      font-weight: 650;
+      color: #1f1f1f;
+    }
+
+    .config-panel input[type="checkbox"] {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      min-height: 20px;
+      border: 1.5px solid rgba(17,17,17,.42);
+      border-radius: 5px;
+      background: transparent;
+      display: grid;
+      place-items: center;
+    }
+
+    .config-panel input[type="checkbox"]::after {
+      content: "";
+      width: 9px;
+      height: 5px;
+      border-left: 2px solid #fffaf2;
+      border-bottom: 2px solid #fffaf2;
+      transform: rotate(-45deg) scale(0);
+      transition: transform .12s ease;
+    }
+
+    .config-panel input[type="checkbox"]:checked {
+      background: var(--text);
+      border-color: var(--text);
+    }
+
+    .config-panel input[type="checkbox"]:checked::after {
+      transform: rotate(-45deg) scale(1);
+    }
+
+    .config-panel .actions {
+      margin-top: 22px;
+      gap: 12px;
+    }
+
+    .config-panel .btn {
+      min-height: 48px;
+      border-radius: 999px;
+      min-width: 116px;
+      padding: 0 26px;
+      background: #151515;
+      color: #fffaf2;
+      box-shadow: none;
+      font-weight: 800;
+      letter-spacing: .02em;
+    }
+
+    .config-panel .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(0,0,0,.12);
+    }
+
+    .config-panel .btn.secondary {
+      background: transparent;
+      color: #151515;
+      border: 1px solid rgba(17,17,17,.18);
+      min-width: 104px;
+    }
+
+    .panel::before,
+    .card::before { display: none; }
+
+    .panel + .panel { margin-top: 16px; }
+
+    .section-title {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    h2 {
+      font-size: 22px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .bubble-grid {
+      width: min(980px, 100%);
+      margin: clamp(22px, 3vw, 34px) auto 0;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 22px;
+    }
+
+    .bubble {
+      min-height: 196px;
+      padding: 24px 20px 20px;
+      border: 1px solid rgba(121, 101, 77, .16);
+      border-radius: 11px;
+      background: rgba(255, 253, 248, .78);
+      box-shadow: 0 8px 24px rgba(54, 45, 34, .08);
+      text-align: center;
+      color: var(--text);
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .bubble:hover {
+      transform: translateY(-4px);
+      border-color: rgba(156, 116, 72, .34);
+      box-shadow: var(--shadow);
+    }
+
+    .bubble-icon {
+      display: grid;
+      place-items: center;
+      width: 76px;
+      height: 76px;
+      border: 0;
+      border-radius: 50%;
+      margin: 0 auto 18px;
+      background: radial-gradient(circle at 35% 25%, #fffaf2, var(--brand-soft));
+      color: var(--gold-dark);
+      font-size: 30px;
+      font-weight: 800;
+      box-shadow: inset 0 0 0 1px rgba(156,116,72,.12);
+    }
+
+    .bubble strong {
+      display: block;
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 24px;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+
+    .bubble strong::after {
+      content: "";
+      display: block;
+      width: 44px;
+      height: 1px;
+      margin: 18px auto 0;
+      background: var(--gold);
+    }
+
+    .bubble span {
+      color: var(--muted);
+      display: block;
+      font-size: 15px;
+      line-height: 1.8;
+    }
+
+    .dash-grid {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .word-bank {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 10px;
+      max-height: 360px;
+      overflow: auto;
+    }
+
+    .word-chip {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fffefb;
+    }
+
+    .word-chip strong {
+      display: block;
+      font-size: 20px;
+      line-height: 1.1;
+      margin-bottom: 5px;
+      overflow-wrap: anywhere;
+    }
+
+    .word-chip span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .stats, .result-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .stat, .result-box, .setting-box {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fffefb;
+    }
+
+    .stat strong, .result-box strong {
+      display: block;
+      font-size: 32px;
+      line-height: 1;
+      margin-bottom: 7px;
+    }
+
+    .stat span, .result-box span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 15px;
+      border-radius: 8px;
+      color: #fffaf2;
+      background: linear-gradient(180deg, #b28758, #8f673b);
+      font-weight: 650;
+      white-space: nowrap;
+      box-shadow: 0 12px 24px rgba(122, 86, 50, .2);
+      transition: transform .14s ease, box-shadow .14s ease, opacity .14s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 26px rgba(122, 86, 50, .24);
+    }
+
+    .btn.secondary {
+      color: var(--text);
+      background: rgba(255,253,248,.75);
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+
+    .btn.danger { background: linear-gradient(180deg, #c95b4d, #a63a2d); }
+    .btn.wide { width: 100%; }
+    .btn.large { min-width: 300px; min-height: 54px; font-size: 21px; }
+
+    .hero-actions {
+      display: grid;
+      justify-items: center;
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .trust-line {
+      color: var(--muted);
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 15px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--brand);
+      background: rgba(255, 250, 242, .85);
+      font-weight: 700;
+      font-size: 13px;
+      white-space: nowrap;
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    .import-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .setting-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .setting-box label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+      color: var(--text);
+    }
+
+    .setting-box input[type="checkbox"] {
+      width: 18px;
+      min-height: 18px;
+      flex: 0 0 auto;
+    }
+
+    .question-card {
+      min-height: 620px;
+      padding: clamp(22px, 4vw, 42px);
+      border-color: var(--strong-line);
+      background: #fffefb;
+    }
+
+    .question-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .big-word {
+      font-size: clamp(42px, 8vw, 82px);
+      line-height: 1.05;
+      font-weight: 900;
+      letter-spacing: 0;
+      margin: 14px 0 10px;
+      overflow-wrap: anywhere;
+    }
+
+    .question-title {
+      font-size: clamp(24px, 3.5vw, 40px);
+      font-weight: 800;
+      line-height: 1.18;
+      letter-spacing: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .question-meta {
+      color: var(--muted);
+      font-size: 15px;
+      margin-top: 8px;
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .option {
+      display: grid;
+      grid-template-columns: 46px minmax(0, 1fr);
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      min-height: 82px;
+      padding: 12px 16px 12px 12px;
+      border: 1px solid var(--strong-line);
+      border-radius: 8px;
+      background: #fffefb;
+      color: var(--text);
+      text-align: left;
+      transition: border .16s, background .16s, transform .12s;
+    }
+
+    .option:hover {
+      border-color: #b8c6dd;
+      background: #fffff8;
+      transform: translateY(-1px);
+      box-shadow: 3px 3px 0 #111;
+    }
+
+    .option-text {
+      font-size: clamp(17px, 2.1vw, 23px);
+      overflow-wrap: anywhere;
+    }
+
+    .letter {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--strong-line);
+      border-radius: 6px;
+      background: var(--brand-soft);
+      color: var(--text);
+      font-weight: 800;
+    }
+
+    .option.selected {
+      border-color: var(--brand);
+      background: var(--brand-soft);
+    }
+
+    .option.correct {
+      border-color: rgba(22, 163, 74, .5);
+      background: var(--green-soft);
+    }
+
+    .option.wrong {
+      border-color: rgba(220, 38, 38, .45);
+      background: var(--red-soft);
+    }
+
+    .order-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .order-item {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 12px;
+      min-height: 72px;
+      padding: 12px;
+      border: 1px solid var(--strong-line);
+      border-radius: 8px;
+      background: #fffefb;
+      will-change: transform;
+    }
+
+    .order-item.correct {
+      border-color: rgba(22, 163, 74, .5);
+      background: var(--green-soft);
+    }
+
+    .order-item.wrong {
+      border-color: rgba(220, 38, 38, .45);
+      background: var(--red-soft);
+    }
+
+    .order-index {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--strong-line);
+      border-radius: 6px;
+      background: var(--brand-soft);
+      font-weight: 850;
+    }
+
+    .order-text {
+      font-size: clamp(16px, 1.9vw, 21px);
+      overflow-wrap: anywhere;
+    }
+
+    .order-actions {
+      display: inline-flex;
+      gap: 6px;
+    }
+
+    .order-move {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: rgba(255,253,248,.84);
+      color: var(--text);
+      font-weight: 850;
+      transition: background .16s var(--ease), transform .12s var(--ease);
+    }
+
+    .order-move:hover {
+      background: var(--brand-soft);
+      transform: translateY(-1px);
+    }
+
+    .explain {
+      display: none;
+      margin-top: 18px;
+      padding: 15px;
+      border-radius: 8px;
+      background: #fffefb;
+      border: 1px solid var(--line);
+    }
+
+    .explain.show { display: block; }
+    .explain.good { background: var(--green-soft); border-color: rgba(22, 163, 74, .35); }
+    .explain.bad { background: var(--red-soft); border-color: rgba(220, 38, 38, .32); }
+
+    .navline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .progress-wrap {
+      flex: 1;
+      height: 10px;
+      border: 1px solid var(--strong-line);
+      border-radius: 999px;
+      background: #fffefb;
+      overflow: hidden;
+    }
+
+    .progress {
+      width: 0%;
+      height: 100%;
+      background: var(--brand-soft);
+      transition: width .2s;
+    }
+
+    .empty {
+      min-height: 360px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 30px;
+      color: var(--muted);
+    }
+
+    .empty h2 {
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .mistake-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .session-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .session-item {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,252,.72);
+    }
+
+    .session-item strong {
+      display: block;
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+
+    .session-meta {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .shortcut-hint {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 12px;
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    .mistake-item {
+      display: grid;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 13px;
+      background: #fffefb;
+    }
+
+    .answer-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 0 9px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #f0eee6;
+      font-size: 13px;
+      color: #344054;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .pill.ok { color: var(--green); background: var(--green-soft); }
+    .pill.warn { color: var(--amber); background: var(--amber-soft); }
+
+    .article-preview {
+      max-height: 240px;
+      overflow: auto;
+      padding: 13px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #fffefb;
+      color: #3b3b35;
+      font-size: 14px;
+      white-space: pre-wrap;
+    }
+
+    @media (max-width: 900px) {
+      .topbar, .bubble-grid, .dash-grid, .import-layout, .setting-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .tabs { overflow-x: auto; }
+      .stats, .result-grid, .options { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 560px) {
+      .app {
+        width: min(100% - 20px, 1180px);
+        padding-top: 14px;
+      }
+
+      .question-head, .navline {
+        display: grid;
+      }
+
+      .option {
+        grid-template-columns: 38px minmax(0, 1fr);
+        min-height: 70px;
+      }
+
+      .letter {
+        width: 34px;
+        height: 34px;
+      }
+    }
+
+    /* Impeccable polish: preserve the paper, ink, and brown accent style. */
+    :root {
+      --bg: #f5f0e7;
+      --paper: #f7f1e7;
+      --panel: rgba(255, 253, 247, .78);
+      --text: #171411;
+      --muted: #6f675d;
+      --line: #ddd3c4;
+      --strong-line: #9b7652;
+      --brand-soft: #ede2d1;
+      --shadow: 0 14px 34px rgba(58, 45, 31, .08);
+      --radius: 8px;
+      --ease: cubic-bezier(.2, .8, .2, 1);
+    }
+
+    html {
+      background: var(--paper);
+      overflow-x: hidden;
+      text-size-adjust: 100%;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      overflow-x: hidden;
+      background:
+        radial-gradient(circle at 28% 8%, rgba(255,255,255,.86), transparent 28%),
+        linear-gradient(180deg, #f8f2e9 0%, #f3ece0 100%);
+      font-family: "MiSans", "HarmonyOS Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      letter-spacing: 0;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    h1, h2, h3, .brand-title, .btn, .tab, .badge, .option-text, .stat strong, .result-box strong {
+      letter-spacing: 0;
+    }
+
+    .app {
+      width: 100%;
+      margin: 0;
+      padding-inline: clamp(18px, 4vw, 56px);
+      isolation: isolate;
+      background:
+        radial-gradient(circle at 21% 7%, rgba(255,255,255,.82), transparent 24%),
+        linear-gradient(180deg, rgba(255,255,255,.66), rgba(255,255,255,.18)),
+        var(--paper);
+    }
+
+    .app::before {
+      background-size: 36px 36px;
+      opacity: .42;
+    }
+
+    .topbar {
+      width: min(1180px, 100%);
+      margin-inline: auto;
+      margin-bottom: clamp(20px, 3.4vw, 42px);
+    }
+
+    .brand {
+      gap: 12px;
+    }
+
+    .logo {
+      width: clamp(92px, 11vw, 118px);
+      height: clamp(42px, 5vw, 54px);
+      filter: contrast(1.24) saturate(.96);
+    }
+
+    .brand-title {
+      font-size: clamp(14px, 1.45vw, 19px);
+      font-weight: 850;
+    }
+
+    .tabs {
+      gap: clamp(14px, 3.2vw, 42px);
+    }
+
+    .tab {
+      min-height: 40px;
+      color: #4c453d;
+      font-size: 14px;
+      font-weight: 700;
+      transition: color .18s var(--ease);
+    }
+
+    .tab::after {
+      bottom: 1px;
+      height: 2px;
+      border-radius: 999px;
+      background: #171411;
+    }
+
+    .tab.active::after,
+    .tab:hover::after {
+      width: 30px;
+    }
+
+    .tab:focus-visible,
+    .btn:focus-visible,
+    .bubble:focus-visible,
+    .option:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible {
+      outline: 2px solid #171411;
+      outline-offset: 3px;
+    }
+
+    .home-screen {
+      min-height: calc(100vh - 150px);
+      display: grid;
+      align-content: start;
+      justify-items: center;
+      padding-bottom: clamp(70px, 10vw, 118px);
+    }
+
+    .home-screen::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(23, 20, 17, .045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(23, 20, 17, .04) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,.9), rgba(0,0,0,.72) 60%, rgba(0,0,0,.55));
+    }
+
+    .home-screen.active {
+      display: grid;
+    }
+
+    .home-screen:not(.active) {
+      display: none;
+    }
+
+    .hero-symbol {
+      margin-bottom: 14px;
+      color: #8d6845;
+      font-size: 24px;
+    }
+
+    .hero-symbol::before,
+    .hero-symbol::after {
+      width: 46px;
+      background: rgba(141, 104, 69, .34);
+    }
+
+    .hero-logo {
+      display: block;
+      width: min(520px, 72vw);
+      max-height: 178px;
+      object-fit: contain;
+      margin: clamp(4px, 1.2vw, 14px) auto 8px;
+      filter: contrast(1.08);
+    }
+
+    h1 {
+      max-width: 980px;
+      font-size: clamp(43px, 6.4vw, 82px);
+      font-weight: 900;
+      text-wrap: balance;
+    }
+
+    .subtitle {
+      max-width: 680px;
+      margin-inline: auto;
+      margin-top: 18px;
+      color: #696057;
+      font-size: clamp(15px, 1.75vw, 21px);
+      line-height: 1.7;
+      letter-spacing: 0;
+      text-wrap: balance;
+    }
+
+    .bubble-grid {
+      width: min(1020px, 100%);
+      gap: clamp(14px, 2vw, 22px);
+    }
+
+    .bubble {
+      min-height: 188px;
+      padding: 24px 18px 20px;
+      border-radius: 8px;
+      border-color: rgba(118, 96, 70, .18);
+      background: rgba(255, 253, 247, .7);
+      box-shadow: 0 10px 28px rgba(58, 45, 31, .07);
+      transform: translateZ(0);
+      transition: border-color .18s var(--ease), box-shadow .18s var(--ease), transform .18s var(--ease), background .18s var(--ease);
+    }
+
+    .bubble:hover {
+      transform: translateY(-2px);
+      border-color: rgba(23, 20, 17, .34);
+      background: rgba(255, 253, 247, .88);
+      box-shadow: 0 16px 34px rgba(58, 45, 31, .1);
+    }
+
+    .bubble-icon {
+      width: 68px;
+      height: 68px;
+      margin-bottom: 17px;
+      background: #f4eadb;
+      color: #6f4d2f;
+      box-shadow: inset 0 0 0 1px rgba(111, 77, 47, .14);
+      font-size: 26px;
+    }
+
+    .bubble strong {
+      margin-bottom: 16px;
+      font-size: clamp(20px, 2vw, 24px);
+      font-weight: 900;
+    }
+
+    .bubble strong::after {
+      margin-top: 14px;
+      background: rgba(141, 104, 69, .72);
+    }
+
+    .bubble span,
+    .hint,
+    .trust-line,
+    .shortcut-hint,
+    .session-meta {
+      color: var(--muted);
+    }
+
+    .home-wave {
+      opacity: .96;
+      transform: translateZ(0);
+    }
+
+    .home-wave.left-soft {
+      left: -20%;
+      width: 52%;
+      height: clamp(48px, 7.2vw, 82px);
+    }
+
+    .home-wave.left-dark {
+      left: -16%;
+      width: 34%;
+      height: clamp(34px, 4.8vw, 55px);
+    }
+
+    .home-wave.right-soft {
+      right: -20%;
+      width: 54%;
+      height: clamp(58px, 8vw, 96px);
+    }
+
+    .home-wave.right-dark {
+      right: -14%;
+      width: 34%;
+      height: clamp(42px, 6.3vw, 72px);
+    }
+
+    .panel,
+    .card,
+    .word-chip,
+    .stat,
+    .result-box,
+    .setting-box,
+    .mistake-item,
+    .session-item,
+    .article-preview,
+    .explain {
+      border-radius: 8px;
+      border-color: rgba(74, 58, 39, .15);
+      background: rgba(255, 253, 247, .82);
+      box-shadow: none;
+    }
+
+    .panel {
+      width: min(1180px, 100%);
+      margin-inline: auto;
+      padding: clamp(18px, 2.5vw, 28px);
+    }
+
+    .panel + .panel {
+      margin-top: 18px;
+    }
+
+    .section-title {
+      align-items: flex-start;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    h2 {
+      font-size: clamp(22px, 2.4vw, 30px);
+      font-weight: 900;
+    }
+
+    h3 {
+      font-size: 16px;
+      font-weight: 850;
+    }
+
+    .btn {
+      min-height: 44px;
+      padding: 0 18px;
+      border-radius: 999px;
+      background: #171411;
+      color: #fffaf2;
+      box-shadow: none;
+      font-weight: 800;
+      transition: transform .16s var(--ease), background .16s var(--ease), border-color .16s var(--ease), opacity .16s var(--ease);
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      background: #272119;
+      box-shadow: none;
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn.secondary {
+      color: #171411;
+      background: rgba(255,253,247,.7);
+      border: 1px solid rgba(23, 20, 17, .18);
+    }
+
+    .btn.secondary:hover {
+      background: rgba(255,253,247,.95);
+      border-color: rgba(23, 20, 17, .34);
+    }
+
+    .btn.danger {
+      background: #9f3f33;
+      color: #fffaf2;
+    }
+
+    .btn.large {
+      min-width: min(300px, 100%);
+      min-height: 56px;
+      padding-inline: 32px;
+      font-size: 20px;
+    }
+
+    .badge {
+      min-height: 30px;
+      border-color: rgba(74, 58, 39, .16);
+      background: rgba(255, 250, 242, .88);
+      color: #2d251d;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    textarea,
+    input,
+    select {
+      border-radius: 8px;
+      border-color: rgba(74, 58, 39, .18);
+      background: rgba(255, 253, 247, .84);
+      transition: border-color .18s var(--ease), box-shadow .18s var(--ease), background .18s var(--ease);
+    }
+
+    textarea:focus,
+    input:focus,
+    select:focus {
+      border-color: rgba(23, 20, 17, .46);
+      box-shadow: 0 0 0 4px rgba(156, 116, 72, .13);
+      background: #fffdf7;
+    }
+
+    .config-panel {
+      width: min(1040px, 100%);
+      padding: clamp(24px, 4vw, 44px);
+      border-color: rgba(23,20,17,.12);
+      background: rgba(255, 253, 247, .68);
+    }
+
+    .config-panel .section-title {
+      margin-bottom: 22px;
+      padding-bottom: 16px;
+    }
+
+    .config-panel h2 {
+      font-size: clamp(34px, 4.4vw, 56px);
+      line-height: 1;
+      transform: none;
+      text-wrap: balance;
+    }
+
+    .config-panel h3 {
+      letter-spacing: 0;
+    }
+
+    .config-panel .setting-grid {
+      border-radius: 10px;
+      border-color: rgba(23,20,17,.13);
+      background: rgba(255,253,247,.72);
+    }
+
+    .config-panel .setting-box {
+      padding: clamp(18px, 2.2vw, 24px);
+    }
+
+    .config-panel label {
+      font-weight: 750;
+    }
+
+    .config-panel .setting-grid.config-layout {
+      display: grid;
+      grid-template-columns: minmax(220px, .72fr) repeat(2, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 26px;
+      border: 0;
+      border-radius: 0;
+      overflow: visible;
+      background: transparent;
+    }
+
+    .config-panel .setting-box.config-card {
+      display: flex;
+      flex-direction: column;
+      min-height: 228px;
+      padding: 24px;
+      border: 1px solid rgba(23,20,17,.14);
+      border-radius: 12px;
+      background: rgba(255,253,247,.82);
+    }
+
+    .config-panel .setting-box.config-card:last-child {
+      border-right: 1px solid rgba(23,20,17,.14);
+    }
+
+    .config-card.word-card {
+      box-shadow: inset 0 5px 0 #171411;
+    }
+
+    .config-card.article-card {
+      box-shadow: inset 0 5px 0 #8d6845;
+      background:
+        linear-gradient(135deg, rgba(237, 226, 209, .62), rgba(255,253,247,.78) 45%),
+        rgba(255,253,247,.82);
+    }
+
+    .config-card.count-card {
+      justify-content: space-between;
+      background: rgba(255,250,242,.8);
+    }
+
+    .config-card-head {
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+      margin-bottom: 20px;
+    }
+
+    .type-mark {
+      display: grid;
+      place-items: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      background: #171411;
+      color: #fffaf2;
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .type-mark.article {
+      background: #8d6845;
+    }
+
+    .type-mark.count {
+      background: #efe3d2;
+      color: #171411;
+      border: 1px solid rgba(23,20,17,.14);
+    }
+
+    .config-card h3 {
+      margin: 0 0 6px;
+      font-size: 19px;
+      font-weight: 900;
+    }
+
+    .config-card .hint {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .model-note {
+      margin: 12px 0 0;
+      color: #8d6845;
+      font-size: 13px;
+      font-weight: 850;
+      line-height: 1.55;
+    }
+
+    .config-panel .count-card select {
+      min-height: 64px;
+      padding-inline: 18px;
+      border-radius: 12px;
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .option-stack {
+      display: grid;
+      gap: 12px;
+      margin-top: auto;
+    }
+
+    .difficulty-control {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .difficulty-control h4 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 850;
+    }
+
+    .difficulty-options {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .difficulty-option {
+      position: relative;
+      display: grid;
+      min-height: 58px;
+      place-items: center;
+      overflow: hidden;
+      border: 1px solid rgba(23,20,17,.14);
+      border-radius: 8px;
+      background: rgba(255,253,247,.76);
+      color: #171411;
+      font-weight: 850;
+      cursor: pointer;
+      box-shadow: 0 0 0 rgba(23,20,17,0);
+      transition: background .18s var(--ease), border-color .18s var(--ease), transform .14s var(--ease), box-shadow .18s var(--ease), color .18s var(--ease);
+    }
+
+    .difficulty-option::after {
+      content: "";
+      position: absolute;
+      inset: -40% auto -40% -70%;
+      width: 45%;
+      transform: skewX(-18deg);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.5), transparent);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .difficulty-option span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .difficulty-option:hover {
+      border-color: rgba(23,20,17,.36);
+      transform: translateY(-2px);
+      box-shadow: 4px 5px 0 rgba(23,20,17,.16);
+    }
+
+    .difficulty-option:hover::after {
+      opacity: 1;
+      animation: difficulty-sheen .58s var(--ease) both;
+    }
+
+    .difficulty-option:active {
+      transform: translateY(1px) scale(.98);
+      box-shadow: 1px 2px 0 rgba(23,20,17,.18);
+    }
+
+    .difficulty-option input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .difficulty-option:has(input:checked) {
+      border-color: #171411;
+      background: #171411;
+      color: #fffaf2;
+      box-shadow: 3px 4px 0 rgba(156,116,72,.24);
+      animation: difficulty-pop .22s var(--ease);
+    }
+
+    @keyframes difficulty-sheen {
+      from { transform: translateX(0) skewX(-18deg); }
+      to { transform: translateX(360%) skewX(-18deg); }
+    }
+
+    @keyframes difficulty-pop {
+      0% { transform: scale(.98); }
+      65% { transform: scale(1.025); }
+      100% { transform: scale(1); }
+    }
+
+    .config-panel label.check-row {
+      display: grid;
+      grid-template-columns: 32px minmax(0, 1fr);
+      gap: 14px;
+      align-items: center;
+      min-height: 62px;
+      padding: 12px 14px;
+      border: 1px solid rgba(23,20,17,.12);
+      border-radius: 12px;
+      background: rgba(255,253,247,.72);
+      font-size: 18px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: border-color .16s var(--ease), background .16s var(--ease), transform .16s var(--ease);
+    }
+
+    .config-panel label.check-row:hover {
+      transform: translateY(-1px);
+      border-color: rgba(23,20,17,.28);
+      background: rgba(255,253,247,.96);
+    }
+
+    .config-panel label.check-row input[type="checkbox"] {
+      width: 30px;
+      height: 30px;
+      min-height: 30px;
+      border-radius: 8px;
+    }
+
+    .check-copy {
+      display: grid;
+      gap: 3px;
+    }
+
+    .check-copy small {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 650;
+      line-height: 1.35;
+    }
+
+    .config-actions {
+      align-items: center;
+      margin-top: 24px;
+      gap: 14px;
+    }
+
+    .config-panel .btn.config-primary {
+      min-height: 66px;
+      min-width: 210px;
+      padding-inline: 34px;
+      border-radius: 999px;
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .config-panel .btn.config-secondary {
+      min-height: 58px;
+      min-width: 150px;
+      padding-inline: 28px;
+      font-size: 18px;
+      font-weight: 850;
+    }
+
+    .word-bank {
+      scrollbar-color: rgba(23,20,17,.25) transparent;
+    }
+
+    .word-chip {
+      padding: 13px;
+      transition: border-color .16s var(--ease), background .16s var(--ease);
+    }
+
+    .word-chip:hover {
+      border-color: rgba(23,20,17,.24);
+      background: rgba(255,253,247,.96);
+    }
+
+    .stat,
+    .result-box {
+      padding: 16px;
+    }
+
+    .stat strong,
+    .result-box strong {
+      color: #171411;
+      font-size: clamp(28px, 3.4vw, 36px);
+      font-weight: 900;
+    }
+
+    .question-card {
+      width: min(1120px, 100%);
+      min-height: min(620px, calc(100vh - 170px));
+      border-color: rgba(23,20,17,.2);
+      background: rgba(255,253,247,.88);
+    }
+
+    .question-card.article-question {
+      border-color: rgba(141, 104, 69, .3);
+      background:
+        linear-gradient(90deg, rgba(237, 226, 209, .52), transparent 34%),
+        rgba(255,253,247,.9);
+    }
+
+    .question-head {
+      margin-bottom: 22px;
+    }
+
+    .question-kind {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .source-badge {
+      border-color: rgba(23, 20, 17, .2);
+      background: #171411;
+      color: #fffaf2;
+    }
+
+    .source-badge.article {
+      background: #8d6845;
+    }
+
+    .big-word {
+      margin: 16px 0 12px;
+      font-weight: 950;
+      text-wrap: balance;
+    }
+
+    .question-title {
+      max-width: 980px;
+      font-weight: 850;
+      text-wrap: pretty;
+    }
+
+    .question-meta {
+      max-width: 920px;
+      line-height: 1.75;
+    }
+
+    .article-context {
+      max-width: 980px;
+      margin-top: 18px;
+      padding: 16px 18px;
+      border: 1px solid rgba(141, 104, 69, .22);
+      border-left: 4px solid #8d6845;
+      border-radius: 8px;
+      background: rgba(245, 238, 226, .72);
+      color: #3d3329;
+      font-size: clamp(15px, 1.6vw, 18px);
+      line-height: 1.75;
+      overflow-wrap: anywhere;
+    }
+
+    .review-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .review-item {
+      padding: 14px 16px;
+      border: 1px solid rgba(74, 58, 39, .16);
+      border-radius: 8px;
+      background: rgba(255,253,247,.84);
+    }
+
+    .review-item.correct {
+      border-color: rgba(23, 114, 69, .3);
+      background: rgba(232, 247, 236, .62);
+    }
+
+    .review-item.wrong {
+      border-color: rgba(180, 35, 24, .26);
+      background: rgba(255, 241, 238, .58);
+    }
+
+    .review-title {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      font-weight: 850;
+      line-height: 1.55;
+    }
+
+    .review-title-main {
+      display: grid;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .review-title-main span {
+      overflow-wrap: anywhere;
+    }
+
+    .review-detail-toggle {
+      justify-self: start;
+      min-height: 32px;
+      padding: 0 10px;
+      border: 1px solid rgba(74, 58, 39, .18);
+      border-radius: 6px;
+      background: rgba(255,253,247,.84);
+      color: #171411;
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .review-details {
+      display: none;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .review-item.open .review-details {
+      display: grid;
+    }
+
+    .review-answer-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .review-answer {
+      padding: 10px 12px;
+      border: 1px solid rgba(74, 58, 39, .14);
+      border-radius: 8px;
+      background: rgba(255,253,247,.72);
+      color: #3d3329;
+      overflow-wrap: anywhere;
+    }
+
+    .review-answer strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #171411;
+      font-size: 13px;
+    }
+
+    .review-explanation {
+      padding: 10px 12px;
+      border: 1px solid rgba(74, 58, 39, .14);
+      border-radius: 8px;
+      background: rgba(245, 238, 226, .72);
+      color: #3d3329;
+      overflow-wrap: anywhere;
+    }
+
+    .options {
+      gap: 12px;
+    }
+
+    .option {
+      min-height: 84px;
+      border-color: rgba(74, 58, 39, .2);
+      border-radius: 8px;
+      background: rgba(255,253,247,.84);
+      box-shadow: none;
+      transition: transform .14s var(--ease), border-color .14s var(--ease), background .14s var(--ease);
+    }
+
+    .option:hover {
+      transform: translateY(-1px);
+      border-color: rgba(23, 20, 17, .42);
+      background: #fffdf7;
+      box-shadow: none;
+    }
+
+    .option.selected {
+      border-color: #171411;
+      background: #efe3d2;
+    }
+
+    .option.correct {
+      border-color: rgba(23, 114, 69, .45);
+      background: #e8f7ec;
+    }
+
+    .option.wrong {
+      border-color: rgba(180, 35, 24, .42);
+      background: #fff1ee;
+    }
+
+    .match-board {
+      display: grid;
+      grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr);
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .match-column {
+      display: grid;
+      align-content: start;
+      gap: 12px;
+      min-height: 360px;
+      padding: 16px;
+      border: 1px solid rgba(74, 58, 39, .18);
+      border-radius: 10px;
+      background: rgba(255,253,247,.72);
+    }
+
+    .match-column-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: #3d3329;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .match-pool,
+    .match-targets {
+      display: grid;
+      gap: 10px;
+    }
+
+    .match-chip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 64px;
+      padding: 12px 16px;
+      border: 1px solid rgba(23, 20, 17, .26);
+      border-radius: 10px;
+      background: #171411;
+      color: #fffaf2;
+      font-size: clamp(18px, 2.2vw, 26px);
+      font-weight: 900;
+      text-align: left;
+      box-shadow: none;
+      cursor: grab;
+      user-select: none;
+      touch-action: none;
+      transition: transform .14s var(--ease), border-color .14s var(--ease), background .14s var(--ease);
+    }
+
+    .match-chip::after {
+      content: "拖动";
+      flex: 0 0 auto;
+      color: rgba(255,250,242,.72);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .match-chip:hover,
+    .match-chip.selected {
+      transform: translateY(-1px);
+      background: #272119;
+    }
+
+    .match-chip.selected {
+      outline: 3px solid rgba(141, 104, 69, .28);
+      outline-offset: 2px;
+    }
+
+    .match-chip.dragging {
+      opacity: .55;
+      cursor: grabbing;
+    }
+
+    .match-chip.locked {
+      cursor: default;
+      touch-action: auto;
+    }
+
+    .match-chip.locked::after {
+      content: "";
+      display: none;
+    }
+
+    .match-target {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(150px, .72fr);
+      gap: 12px;
+      align-items: stretch;
+      min-height: 76px;
+      padding: 10px;
+      border: 1.5px dashed rgba(74, 58, 39, .28);
+      border-radius: 10px;
+      background: rgba(245, 238, 226, .52);
+      transition: border-color .14s var(--ease), background .14s var(--ease), transform .14s var(--ease);
+    }
+
+    .match-target.drag-over,
+    .match-target.selected {
+      border-color: #171411;
+      background: #efe3d2;
+      transform: translateY(-1px);
+    }
+
+    .match-target.correct {
+      border-style: solid;
+      border-color: rgba(23, 114, 69, .45);
+      background: #e8f7ec;
+    }
+
+    .match-target.wrong {
+      border-style: solid;
+      border-color: rgba(180, 35, 24, .42);
+      background: #fff1ee;
+    }
+
+    .match-meaning {
+      display: grid;
+      align-content: center;
+      padding: 10px 12px;
+      color: #171411;
+      font-size: clamp(17px, 2vw, 23px);
+      font-weight: 900;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+
+    .match-slot {
+      display: grid;
+      place-items: center;
+      min-height: 54px;
+      border: 1px solid rgba(74, 58, 39, .16);
+      border-radius: 8px;
+      background: rgba(255,253,247,.84);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .match-slot .match-chip {
+      width: 100%;
+      min-height: 54px;
+      font-size: clamp(16px, 1.8vw, 22px);
+    }
+
+    .match-score {
+      display: inline-flex;
+      align-items: center;
+      width: max-content;
+      min-height: 30px;
+      margin-top: 14px;
+      padding: 0 12px;
+      border: 1px solid rgba(74, 58, 39, .16);
+      border-radius: 999px;
+      background: rgba(255, 250, 242, .88);
+      color: #3d3329;
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .letter {
+      border-color: rgba(74, 58, 39, .2);
+      background: #f0e5d5;
+      font-weight: 900;
+    }
+
+    .progress-wrap {
+      border-color: rgba(74, 58, 39, .2);
+      background: rgba(255,253,247,.78);
+    }
+
+    .progress {
+      background: #171411;
+    }
+
+    .empty {
+      color: var(--muted);
+    }
+
+    .session-list {
+      gap: 12px;
+    }
+
+    .session-item {
+      padding: 15px 16px;
+    }
+
+    .session-item strong {
+      font-weight: 850;
+    }
+
+    .mistake-item {
+      padding: 15px;
+    }
+
+    .pill {
+      border-color: rgba(74, 58, 39, .16);
+      background: #f2eadf;
+      color: #3d3329;
+    }
+
+    .article-preview {
+      margin-top: 16px;
+      line-height: 1.75;
+    }
+
+    @media (max-width: 900px) {
+      .topbar {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      .tabs {
+        width: 100%;
+        justify-content: flex-start;
+        padding-bottom: 4px;
+      }
+
+      .bubble-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .config-panel .setting-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .config-panel .setting-box {
+        border-right: 0;
+        border-bottom: 1px solid rgba(17,17,17,.12);
+      }
+
+      .config-panel .setting-box:last-child {
+        border-bottom: 0;
+      }
+
+      .config-panel .setting-grid.config-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .config-panel .setting-box.config-card {
+        min-height: auto;
+        border-bottom: 1px solid rgba(23,20,17,.14);
+      }
+
+      .match-board {
+        grid-template-columns: 1fr;
+      }
+
+      .match-column {
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .app {
+        width: 100%;
+        padding: 14px 14px 54px;
+      }
+
+      .brand {
+        gap: 8px;
+      }
+
+      .logo {
+        width: 86px;
+        height: 40px;
+      }
+
+      .brand-title {
+        font-size: 13px;
+      }
+
+      .home-screen {
+        min-height: auto;
+        padding-bottom: 78px;
+      }
+
+      .hero-symbol {
+        margin-top: 4px;
+      }
+
+      h1 {
+        font-size: clamp(38px, 12vw, 52px);
+      }
+
+      .subtitle {
+        font-size: 15px;
+      }
+
+      .bubble-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .bubble {
+        display: grid;
+        grid-template-columns: 52px minmax(0, 1fr);
+        grid-template-areas:
+          "icon title"
+          "icon copy";
+        align-items: center;
+        column-gap: 14px;
+        min-height: 94px;
+        padding: 13px 14px;
+        text-align: left;
+      }
+
+      .bubble-icon {
+        grid-area: icon;
+        width: 48px;
+        height: 48px;
+        margin: 0;
+        font-size: 20px;
+      }
+
+      .bubble strong {
+        grid-area: title;
+        margin: 0 0 4px;
+        font-size: 20px;
+      }
+
+      .bubble strong::after {
+        display: none;
+      }
+
+      .bubble span {
+        grid-area: copy;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .hero-actions {
+        margin-top: 16px;
+      }
+
+      .home-wave.left-soft,
+      .home-wave.right-soft {
+        width: 76%;
+      }
+
+      .home-wave.left-dark,
+      .home-wave.right-dark {
+        width: 50%;
+      }
+
+      .section-title,
+      .question-head,
+      .navline,
+      .session-item {
+        grid-template-columns: 1fr;
+      }
+
+      .actions,
+      .navline {
+        align-items: stretch;
+      }
+
+      .actions .btn,
+      .navline .btn {
+        width: 100%;
+      }
+
+      .question-card {
+        min-height: auto;
+        padding: 18px;
+      }
+
+      .big-word {
+        font-size: clamp(36px, 13vw, 52px);
+      }
+
+      .question-title {
+        font-size: clamp(22px, 7vw, 30px);
+      }
+
+      .option {
+        min-height: 70px;
+        padding-right: 12px;
+      }
+
+      .match-column {
+        padding: 12px;
+      }
+
+      .match-target {
+        grid-template-columns: 1fr;
+        min-height: 112px;
+      }
+
+      .match-chip {
+        min-height: 58px;
+        font-size: 18px;
+      }
+
+      .config-panel {
+        padding: 20px 16px;
+      }
+
+      .config-card-head {
+        grid-template-columns: 42px minmax(0, 1fr);
+      }
+
+      .type-mark {
+        width: 42px;
+        height: 42px;
+      }
+
+      .config-panel label.check-row {
+        min-height: 58px;
+        font-size: 16px;
+      }
+
+      .config-actions .btn {
+        width: 100%;
+      }
+
+      .review-answer-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .review-title {
+        display: grid;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="wave-soft" aria-hidden="true"></div>
+    <div class="wave-dark" aria-hidden="true"></div>
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo-wrap" aria-hidden="true"></span>
+        <img class="logo" src="assets/logo-carlab-cropped.png" alt="单词课测试软件 logo">
+        <div>
+          <div class="brand-title">单词课测试软件</div>
+        </div>
+      </div>
+      <nav class="tabs" aria-label="功能切换">
+        <button class="tab active" data-screen="home">首页</button>
+        <button class="tab" data-screen="features">功能</button>
+        <button class="tab" data-screen="guide">使用指南</button>
+        <button class="tab" data-screen="about">关于我们</button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="screen active home-screen" id="home">
+        <img class="hero-logo" src="assets/carlab_logo_transparent.webp" alt="CarLab">
+        <p class="subtitle">单词学习测试软件，生成多种题型。</p>
+
+        <div class="bubble-grid">
+          <button class="bubble" data-screen="importWords">
+            <div class="bubble-icon">▯</div>
+            <strong>导入单词</strong>
+            <span>批量导入重点词汇<br>高效便捷</span>
+          </button>
+          <button class="bubble" data-screen="importArticle">
+            <div class="bubble-icon">▤</div>
+            <strong>导入文章</strong>
+            <span>粘贴英文文章<br>AI 自动出题</span>
+          </button>
+          <button class="bubble" data-screen="config">
+            <div class="bubble-icon">☑</div>
+            <strong>生成测试</strong>
+            <span>多种题型组合<br>大屏练习更专注</span>
+          </button>
+          <button class="bubble" data-screen="results">
+            <div class="bubble-icon">▥</div>
+            <strong>数据统计</strong>
+            <span id="homeReviewHint">答题数据可视化<br>学习进步看得见</span>
+          </button>
+        </div>
+
+        <div class="hero-actions">
+          <button class="btn large" data-screen="config">开始使用</button>
+          <div class="trust-line">已接入 DeepSeek v4 大模型　<span id="wordCount">0 个词</span></div>
+        </div>
+        <div class="home-wave left-soft" aria-hidden="true"></div>
+        <div class="home-wave left-dark" aria-hidden="true"></div>
+        <div class="home-wave right-soft" aria-hidden="true"></div>
+        <div class="home-wave right-dark" aria-hidden="true"></div>
+      </section>
+
+      <section class="screen" id="features">
+        <div class="dash-grid">
+          <section class="panel">
+            <div class="section-title">
+              <div>
+                <h2>已导入单词</h2>
+                <p class="hint">单词导入后会显示在这里，测试题目也会直接显示这些重点词。</p>
+              </div>
+              <span class="badge" id="wordCountFeature">0 个</span>
+            </div>
+            <div class="word-bank" id="wordList"></div>
+          </section>
+
+          <section class="panel">
+            <div class="section-title">
+              <div>
+                <h2>开始测试</h2>
+                <p class="hint">题目数量和题型可调，默认以选择题为主。</p>
+              </div>
+            </div>
+            <div class="stats">
+              <div class="stat"><strong id="totalQuestions">0</strong><span>本次题目</span></div>
+              <div class="stat"><strong id="liveScore">0</strong><span>已答对</span></div>
+              <div class="stat"><strong id="liveRate">0%</strong><span>正确率</span></div>
+            </div>
+            <div class="actions">
+              <button class="btn wide" id="openConfigBtn">设置并生成测试</button>
+              <button class="btn secondary wide" id="loadSampleBtn">导入示例数据</button>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="screen" id="guide">
+        <section class="panel">
+          <div class="section-title">
+            <div>
+              <h2>使用指南</h2>
+              <p class="hint">按顺序完成导入、配置、答题和复习，课堂大屏和个人练习都可使用。</p>
+            </div>
+          </div>
+          <div class="stats">
+            <div class="stat"><strong>1</strong><span>导入单词和文章</span></div>
+            <div class="stat"><strong>2</strong><span>生成测试并答题</span></div>
+            <div class="stat"><strong>3</strong><span>查看错题和统计</span></div>
+          </div>
+        </section>
+      </section>
+
+      <section class="screen" id="about">
+        <section class="panel">
+          <div class="section-title">
+            <div>
+              <h2>关于我们</h2>
+              <p class="hint">这是一个面向英语课堂和自学场景的本地单词测试工具，下一段会加入后端保存和批次记录。</p>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn" data-screen="importWords">导入单词</button>
+            <button class="btn secondary" data-screen="memory">抗遗忘训练</button>
+            <button class="btn secondary" data-screen="mistakes">错题本</button>
+          </div>
+        </section>
+      </section>
+
+      <section class="screen" id="importWords">
+        <div class="import-layout">
+          <section class="panel">
+            <div class="section-title">
+              <div>
+                <h2>导入单词</h2>
+                <p class="hint">每行一个：英文, 中文。也支持用制表符或中文逗号分隔。</p>
+              </div>
+              <span class="badge" id="wordCountImport">0 个</span>
+            </div>
+            <textarea id="wordInput" placeholder="example, 例子&#10;journey, 旅行&#10;improve, 提高"></textarea>
+            <div class="actions">
+              <button class="btn" id="saveWordsBtn">保存单词</button>
+              <button class="btn secondary" data-screen="home">返回首页</button>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="section-title">
+              <div>
+                <h2>预览词表</h2>
+                <p class="hint">保存之后，学生测试会使用这些单词。</p>
+              </div>
+            </div>
+            <div class="word-bank" id="wordListImport"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="screen" id="importArticle">
+        <section class="panel">
+          <div class="section-title">
+            <div>
+              <h2>导入文章</h2>
+              <p class="hint">粘贴英文文章，AI 会根据文章生成测验题。</p>
+            </div>
+            <span class="badge" id="articleStatus">未导入</span>
+          </div>
+          <textarea id="articleInput" placeholder="Paste an English passage here..."></textarea>
+          <div class="actions">
+            <button class="btn" id="saveArticleBtn">保存文章</button>
+            <button class="btn secondary" data-screen="home">返回首页</button>
+            <button class="btn danger" id="clearDataBtn">清空资料</button>
+          </div>
+        </section>
+      </section>
+
+      <section class="screen" id="config">
+        <section class="panel config-panel">
+          <div class="section-title">
+            <div>
+              <h2>测试题目设置</h2>
+              <p class="hint">选择题量，然后生成文章测验或单词测验。</p>
+            </div>
+          </div>
+          <div class="setting-grid config-layout">
+            <div class="setting-box config-card count-card">
+              <div class="config-card-head">
+                <span class="type-mark count">#</span>
+                <div>
+                  <h3>题目数量</h3>
+                  <p class="hint">控制本次练习长度。</p>
+                </div>
+              </div>
+              <select id="questionCount">
+                <option value="10">10 题</option>
+                <option value="15">15 题</option>
+                <option value="20" selected>20 题</option>
+                <option value="25">25 题</option>
+                <option value="30">30 题</option>
+              </select>
+              <div class="difficulty-control">
+                <h4>题目难度</h4>
+                <div class="difficulty-options" role="radiogroup" aria-label="题目难度">
+                  <label class="difficulty-option">
+                    <input type="radio" name="questionDifficulty" value="low" checked>
+                    <span>微微难</span>
+                  </label>
+                  <label class="difficulty-option">
+                    <input type="radio" name="questionDifficulty" value="medium">
+                    <span>微难</span>
+                  </label>
+                  <label class="difficulty-option">
+                    <input type="radio" name="questionDifficulty" value="high">
+                    <span>难</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="setting-box config-card word-card">
+              <div class="config-card-head">
+                <span class="type-mark">W</span>
+                <div>
+                  <h3>生成单词测验</h3>
+                  <p class="hint">自动平均分配看英文选中文、看中文选英文和连连看配对。</p>
+                </div>
+              </div>
+              <button class="btn wide quiz-type-btn" id="generateWordBtn">生成单词测验</button>
+            </div>
+            <div class="setting-box config-card article-card">
+              <div class="config-card-head">
+                <span class="type-mark article">A</span>
+                <div>
+                  <h3>生成文章测验</h3>
+                  <p class="hint">AI 根据文章生成选择题、判断题和排序题。</p>
+                  <p class="model-note">测验由 DeepSeek v4 模型生成。</p>
+                </div>
+              </div>
+              <button class="btn wide quiz-type-btn" id="generateArticleBtn">生成文章测验</button>
+            </div>
+          </div>
+          <div class="actions config-actions">
+            <button class="btn secondary config-secondary" data-screen="home">返回首页</button>
+          </div>
+        </section>
+      </section>
+
+      <section class="screen" id="practice">
+        <div id="quizArea" class="card empty">
+          <div>
+            <h2>请先生成测试</h2>
+            <p>测试会在这里以大题目、大选项显示，适合电脑和平板练习。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="memory">
+        <section class="panel">
+          <div class="section-title">
+            <div>
+              <h2>抗遗忘训练</h2>
+              <p class="hint">答错的单词和题目会进入复习池。复习答对会升级，连续答对后从今日复习中移出。</p>
+            </div>
+            <span class="badge" id="memoryCount">0 个待复习</span>
+          </div>
+          <div class="stats">
+            <div class="stat"><strong id="dueCount">0</strong><span>今日复习</span></div>
+            <div class="stat"><strong id="memoryTotal">0</strong><span>复习池</span></div>
+            <div class="stat"><strong id="masteredCount">0</strong><span>已巩固</span></div>
+            <div class="stat"><strong id="mistakeReviewCount">0</strong><span>错题待练</span></div>
+          </div>
+          <div class="actions">
+            <button class="btn" id="memoryBtn">开始抗遗忘训练</button>
+            <button class="btn secondary" id="clearMemoryBtn">清空复习池</button>
+          </div>
+        </section>
+      </section>
+
+      <section class="screen" id="mistakes">
+        <div class="panel">
+          <div class="section-title">
+            <div>
+              <h2>错题本</h2>
+              <p class="hint">提交错误的题会自动保存，方便学生复习。</p>
+            </div>
+            <button class="btn secondary" id="clearMistakesBtn">清空错题</button>
+          </div>
+          <div id="mistakeList" class="mistake-list"></div>
+        </div>
+      </section>
+
+      <section class="screen" id="results">
+        <div class="panel">
+          <div class="section-title">
+            <div>
+              <h2>统计</h2>
+              <p class="hint">统计保存在当前浏览器中。</p>
+            </div>
+            <button class="btn secondary" id="resetStatsBtn">重置统计</button>
+          </div>
+          <div class="result-grid">
+            <div class="result-box"><strong id="statAnswered">0</strong><span>累计答题</span></div>
+            <div class="result-box"><strong id="statCorrect">0</strong><span>累计答对</span></div>
+            <div class="result-box"><strong id="statRate">0%</strong><span>累计正确率</span></div>
+            <div class="result-box"><strong id="statMistakes">0</strong><span>错题记录</span></div>
+            <div class="result-box"><strong id="statReviewDue">0</strong><span>抗遗忘待练</span></div>
+          </div>
+          <div class="actions" style="margin-top:14px;">
+            <button class="btn" id="statsMemoryBtn">练习错题抗遗忘</button>
+            <button class="btn secondary" data-screen="mistakes">查看错题本</button>
+          </div>
+          <div class="section-title" style="margin-top:18px;">
+            <div>
+              <h3>最近测试批次</h3>
+              <p class="hint">记录每一次测试的题目、用时和正确率。</p>
+            </div>
+          </div>
+          <div class="session-list" id="sessionList"></div>
+          <div class="article-preview" id="articlePreview">暂无文章内容。</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const storeKey = "wordTestApp.v2";
+    const sampleWords = [
+      ["journey", "旅行"],
+      ["improve", "提高，改善"],
+      ["environment", "环境"],
+      ["confident", "自信的"],
+      ["discover", "发现"],
+      ["habit", "习惯"],
+      ["creative", "有创造力的"],
+      ["memory", "记忆"]
+    ];
+    const sampleArticle = "Last summer, Lily joined a reading club in her neighborhood. At first, she was not confident because the books were difficult. Her teacher told her to build a daily reading habit and write down new words. After three months, Lily discovered that her memory improved. She also became more creative when she wrote stories for class. The journey helped her understand that small steps can bring big changes.";
+
+    let data = loadData();
+    let quiz = [];
+    let currentIndex = 0;
+    let answers = [];
+    let activeMode = "normal";
+    let activeQuizKind = "word";
+    let quizStartedAt = 0;
+    let currentSessionId = "";
+
+    const els = {
+      wordInput: document.querySelector("#wordInput"),
+      articleInput: document.querySelector("#articleInput"),
+      wordCount: document.querySelector("#wordCount"),
+      wordCountFeature: document.querySelector("#wordCountFeature"),
+      wordCountImport: document.querySelector("#wordCountImport"),
+      articleStatus: document.querySelector("#articleStatus"),
+      wordList: document.querySelector("#wordList"),
+      wordListImport: document.querySelector("#wordListImport"),
+      quizArea: document.querySelector("#quizArea"),
+      totalQuestions: document.querySelector("#totalQuestions"),
+      liveScore: document.querySelector("#liveScore"),
+      liveRate: document.querySelector("#liveRate"),
+      mistakeList: document.querySelector("#mistakeList"),
+      statAnswered: document.querySelector("#statAnswered"),
+      statCorrect: document.querySelector("#statCorrect"),
+      statRate: document.querySelector("#statRate"),
+      statMistakes: document.querySelector("#statMistakes"),
+      statReviewDue: document.querySelector("#statReviewDue"),
+      sessionList: document.querySelector("#sessionList"),
+      articlePreview: document.querySelector("#articlePreview"),
+      memoryCount: document.querySelector("#memoryCount"),
+      dueCount: document.querySelector("#dueCount"),
+      memoryTotal: document.querySelector("#memoryTotal"),
+      masteredCount: document.querySelector("#masteredCount"),
+      mistakeReviewCount: document.querySelector("#mistakeReviewCount"),
+      homeReviewHint: document.querySelector("#homeReviewHint")
+    };
+
+    function loadData() {
+      const blank = {
+        words: [],
+        article: "",
+        mistakes: [],
+        memory: [],
+        sessions: [],
+        stats: { answered: 0, correct: 0 },
+        updatedAt: 0
+      };
+      try {
+        const saved = JSON.parse(localStorage.getItem(storeKey) || localStorage.getItem("wordTestApp.v1") || "{}");
+        return normalizeDataShape({ ...blank, ...saved });
+      } catch {
+        return blank;
+      }
+    }
+
+    function saveData() {
+      data.updatedAt = Date.now();
+      localStorage.setItem(storeKey, JSON.stringify(data));
+      syncDataToServer();
+      renderMeta();
+    }
+
+    async function loadServerData() {
+      try {
+        const response = await fetch("/api/data");
+        if (!response.ok) return;
+        const serverData = await response.json();
+        data = mergeLocalAndServerData(data, serverData);
+        localStorage.setItem(storeKey, JSON.stringify(data));
+        renderMeta();
+        renderQuestion();
+      } catch {
+        // Opening the HTML directly still works with localStorage only.
+      }
+    }
+
+    function normalizeDataShape(value = {}) {
+      return {
+        words: Array.isArray(value.words) ? value.words : [],
+        article: typeof value.article === "string" ? value.article : "",
+        mistakes: Array.isArray(value.mistakes) ? value.mistakes : [],
+        memory: Array.isArray(value.memory) ? value.memory : [],
+        sessions: Array.isArray(value.sessions) ? value.sessions : [],
+        stats: value.stats && typeof value.stats === "object" ? { answered: 0, correct: 0, ...value.stats } : { answered: 0, correct: 0 },
+        updatedAt: Number(value.updatedAt || 0)
+      };
+    }
+
+    function mergeLocalAndServerData(localData, incomingData) {
+      const local = normalizeDataShape(localData);
+      const server = normalizeDataShape(incomingData);
+      const serverIsNewer = server.updatedAt > local.updatedAt;
+      const merged = serverIsNewer ? { ...local, ...server } : { ...server, ...local };
+      if (!server.words.length && local.words.length) merged.words = local.words;
+      if (server.words.length && !local.words.length) merged.words = server.words;
+      if (!server.article.trim() && local.article.trim()) merged.article = local.article;
+      if (server.article.trim() && !local.article.trim()) merged.article = server.article;
+      merged.memory = mergeMemoryItems(local.memory, server.memory);
+      merged.mistakes = mergeByKey([...local.mistakes, ...server.mistakes], item => item.id || `${item.time || ""}|${item.title || ""}|${item.answer || ""}`).slice(0, 120);
+      merged.sessions = mergeByKey([...local.sessions, ...server.sessions], item => item.id || `${item.startedAt || ""}|${item.time || ""}`).slice(0, 30);
+      merged.stats = serverIsNewer ? server.stats : local.stats;
+      merged.updatedAt = Math.max(local.updatedAt, server.updatedAt, Date.now());
+      return normalizeDataShape(merged);
+    }
+
+    function mergeByKey(items, keyFn) {
+      const seen = new Set();
+      return items
+        .filter(Boolean)
+        .sort((a, b) => Number(b.createdAt || b.startedAt || 0) - Number(a.createdAt || a.startedAt || 0))
+        .filter(item => {
+          const key = keyFn(item);
+          if (!key || seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+    }
+
+    function mergeMemoryItems(localItems = [], serverItems = []) {
+      const byKey = new Map();
+      [...serverItems, ...localItems].forEach(item => {
+        const key = item.reviewId || item.en || item.title;
+        if (!key) return;
+        const prev = byKey.get(key);
+        if (!prev || Number(item.updatedAt || item.createdAt || 0) >= Number(prev.updatedAt || prev.createdAt || 0)) {
+          byKey.set(key, item);
+        }
+      });
+      return [...byKey.values()];
+    }
+
+    async function syncDataToServer() {
+      try {
+        await fetch("/api/data", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(data)
+        });
+      } catch {
+        // Backend is optional; keep the app usable offline.
+      }
+    }
+
+    function parseWords(raw) {
+      return raw
+        .split(/\n+/)
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map(line => {
+          const parts = line.split(/\t|,|，/).map(part => part.trim()).filter(Boolean);
+          if (parts.length < 2) return null;
+          return { en: parts[0], zh: parts.slice(1).join("，") };
+        })
+        .filter(Boolean);
+    }
+
+    function shuffle(items) {
+      return [...items].sort(() => Math.random() - 0.5);
+    }
+
+    function normalizeText(value) {
+      return String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
+    }
+
+    function pickWrongMeanings(correctZh, count) {
+      const pool = data.words.map(word => word.zh).filter(zh => zh !== correctZh);
+      const fallback = ["努力", "原因", "城市", "选择", "课程", "兴趣", "方法", "结果", "计划", "变化"];
+      return shuffle([...new Set([...pool, ...fallback])].filter(item => item !== correctZh)).slice(0, count);
+    }
+
+    function pickWrongWords(correctEn, count) {
+      const pool = data.words.map(word => word.en).filter(en => en !== correctEn);
+      const fallback = ["answer", "lesson", "future", "practice", "important", "student", "complete", "reason"];
+      return shuffle([...new Set([...pool, ...fallback])].filter(item => item !== correctEn)).slice(0, count);
+    }
+
+    function pickMeaningDistractors(word, count, difficulty) {
+      const base = pickWrongMeanings(word.zh, count + 3);
+      if (difficulty === "low") return base.slice(0, count);
+      return shuffle(base.sort((a, b) => meaningSimilarity(word.zh, b) - meaningSimilarity(word.zh, a))).slice(0, count);
+    }
+
+    function pickWordDistractors(word, count, difficulty) {
+      const base = pickWrongWords(word.en, count + 4);
+      if (difficulty === "low") return base.slice(0, count);
+      return shuffle(base.sort((a, b) => wordSimilarity(word.en, b) - wordSimilarity(word.en, a))).slice(0, count);
+    }
+
+    function meaningSimilarity(a, b) {
+      const left = new Set(String(a || "").split(/[，,、\s]+/).filter(Boolean));
+      const right = new Set(String(b || "").split(/[，,、\s]+/).filter(Boolean));
+      return [...left].filter(item => right.has(item)).length;
+    }
+
+    function wordSimilarity(a, b) {
+      const left = String(a || "").toLowerCase();
+      const right = String(b || "").toLowerCase();
+      let score = 0;
+      for (let index = 0; index < Math.min(left.length, right.length); index += 1) {
+        if (left[index] === right[index]) score += 1;
+      }
+      score += Math.max(0, 4 - Math.abs(left.length - right.length));
+      return score;
+    }
+
+    function makeOptions(answer, wrongs) {
+      return shuffle([answer, ...wrongs]).slice(0, 4);
+    }
+
+    function splitSentences(article) {
+      return article
+        .replace(/\s+/g, " ")
+        .split(/(?<=[.!?])\s+/)
+        .map(sentence => sentence.trim())
+        .filter(sentence => sentence.length > 20);
+    }
+
+    function wordPattern(word) {
+      const raw = normalizeText(word.en || word);
+      const escaped = escapeRegExp(raw).replace(/\\s+/g, "\\\\s+");
+      const isPhrase = raw.includes(" ");
+      const suffix = isPhrase ? "" : "(?:s|es|ed|ing)?";
+      return new RegExp(`(^|[^A-Za-z])(${escaped}${suffix})(?=$|[^A-Za-z])`, "i");
+    }
+
+    function findWordInText(text, words = data.words) {
+      return words.find(word => wordPattern(word).test(text));
+    }
+
+    function replaceWordInSentence(sentence, word) {
+      return sentence.replace(wordPattern(word), (match, prefix) => `${prefix}________`);
+    }
+
+    function getQuestionCount() {
+      return Number(document.querySelector("#questionCount").value);
+    }
+
+    function getQuestionDifficulty() {
+      return document.querySelector('input[name="questionDifficulty"]:checked')?.value || "low";
+    }
+
+    async function generateQuiz(mode) {
+      const count = getQuestionCount();
+      const difficulty = getQuestionDifficulty();
+      if (mode === "word" && !data.words.length) {
+        alert("请先导入单词。");
+        switchScreen("importWords");
+        return;
+      }
+      if (mode === "article" && !data.article.trim()) {
+        alert("请先导入文章。");
+        switchScreen("importArticle");
+        return;
+      }
+
+      activeMode = "normal";
+      activeQuizKind = mode;
+      const generateBtn = document.querySelector(mode === "article" ? "#generateArticleBtn" : "#generateWordBtn");
+      const originalLabel = generateBtn.textContent;
+      generateBtn.disabled = true;
+      generateBtn.textContent = "生成中...";
+      let generatedQuestions = [];
+      try {
+        generatedQuestions = mode === "article"
+          ? await buildArticleQuiz(count, difficulty)
+          : buildWordQuiz(count, difficulty);
+      } finally {
+        generateBtn.disabled = false;
+        generateBtn.textContent = originalLabel;
+      }
+      if (!generatedQuestions.length) {
+        alert(mode === "article" ? "没有生成文章测验。请确认已导入文章。" : "没有生成单词测验。请至少导入 2 个单词。");
+        return;
+      }
+
+      quiz = generatedQuestions.slice(0, count);
+      currentIndex = 0;
+      answers = new Array(quiz.length).fill(null);
+      quizStartedAt = Date.now();
+      currentSessionId = `session-${quizStartedAt}`;
+      switchScreen("practice");
+      renderQuestion();
+      renderLiveStats();
+    }
+
+    function buildWordQuiz(count, difficulty = "low") {
+      const level = ["low", "medium", "high"].includes(difficulty) ? difficulty : "low";
+      const words = shuffle(data.words);
+      const enToZh = [];
+      const zhToEn = [];
+
+      words.forEach(word => {
+        enToZh.push({
+          type: level === "low" ? "基础词义题" : "词义辨析题",
+          source: "word",
+          mode: "choice",
+          word: level === "high" ? "" : word.en,
+          title: level === "high" ? "请选择这个重点词最准确的中文意思。" : `请选择 “${word.en}” 的中文意思。`,
+          answer: word.zh,
+          options: makeOptions(word.zh, pickMeaningDistractors(word, 3, level)),
+          explanation: level === "low"
+            ? `“${word.en}” 的常用中文意思是“${word.zh}”。`
+            : `这题考查词义辨析。“${word.en}” 更准确的中文意思是“${word.zh}”。`,
+          memoryWord: word
+        });
+
+        zhToEn.push({
+          type: level === "high" ? "高阶回忆题" : "看中文选英文",
+          source: "word",
+          mode: "choice",
+          word: "",
+          title: level === "high" ? `只根据中文意思选择英文：${word.zh}` : `“${word.zh}” 对应哪个英文单词？`,
+          answer: word.en,
+          options: makeOptions(word.en, pickWordDistractors(word, 3, level)),
+          explanation: level === "high"
+            ? `高难度题不在题干里直接提示英文，正确英文是 “${word.en}”。`
+            : `中文“${word.zh}”对应英文单词 “${word.en}”。`,
+          memoryWord: word
+        });
+      });
+
+      const matchQuestions = buildMatchQuestions(words, level);
+      const bucketsByLevel = {
+        low: [shuffle(enToZh), shuffle(zhToEn), matchQuestions],
+        medium: [shuffle(enToZh), shuffle(zhToEn), matchQuestions],
+        high: [shuffle(zhToEn), matchQuestions]
+      };
+      const buckets = bucketsByLevel[level].filter(bucket => bucket.length);
+
+      return takeEvenlyFromBuckets(buckets, count);
+    }
+
+    async function buildArticleQuiz(count, difficulty) {
+      const aiQuestions = await fetchAiMixedQuestions(count, difficulty);
+      if (aiQuestions.length) return aiQuestions;
+      return buildLocalArticleQuiz(count, difficulty);
+    }
+
+    function buildLocalArticleQuiz(count, difficulty = "low") {
+      const sentences = splitSentences(data.article);
+      const localQuestions = [
+        ...buildCauseEffectQuestions(sentences),
+        ...buildReadingQuestions(sentences)
+      ].map(question => ({
+        ...question,
+        type: `网站模型题 · ${question.type}`,
+        meta: question.meta ? `${question.meta} · AI 失败自动切换` : "网站模型题 · AI 失败自动切换"
+      }));
+      return normalizeLocalArticleDifficulty(takeEvenlyFromBuckets([localQuestions], count), difficulty);
+    }
+
+    function normalizeLocalArticleDifficulty(questions, difficulty = "low") {
+      if (difficulty === "low") return questions;
+      return questions.map(question => {
+        if (difficulty === "medium") {
+          return {
+            ...question,
+            options: question.options.map(option => localOptionToEnglish(option)),
+            answer: localOptionToEnglish(question.answer),
+            explanation: `${question.explanation}（AI 失败后使用网站模型题，选项已切换为英文。）`
+          };
+        }
+        return {
+          ...question,
+          title: localQuestionToEnglish(question),
+          context: "",
+          options: makeEnglishOnlyOptions(question.answer, question.options),
+          answer: localOptionToEnglish(question.answer),
+          explanation: `${question.explanation}（AI 失败后使用网站模型题，高难度显示为英文题面和英文选项。）`
+        };
+      });
+    }
+
+    function makeEnglishOnlyOptions(answer, options = []) {
+      const correct = localOptionToEnglish(answer);
+      const converted = options
+        .map(option => localOptionToEnglish(option))
+        .filter(option => option && !/[\u3400-\u9fff]/.test(option) && normalizeText(option) !== normalizeText(correct));
+      const fallback = [
+        "The article does not support this idea.",
+        "The story gives no clear reason.",
+        "This option is unrelated to the article.",
+        "Nothing changed after that.",
+        "The main character stopped learning.",
+        "The article only lists random words."
+      ];
+      return makeOptions(correct, shuffle([...new Set([...converted, ...fallback])]).slice(0, 3));
+    }
+
+    function localQuestionToEnglish(question) {
+      if (question.type.includes("原因结果题")) return "Which option best matches the cause-and-effect relationship in the article?";
+      if (question.type.includes("词义题")) return "Which option best matches the meaning of the word in the article?";
+      if (question.type.includes("结尾") || question.title.includes("结尾")) return "Which option is closest to the ending information in the article?";
+      return "Which option is supported by the article?";
+    }
+
+    function localOptionToEnglish(value) {
+      const text = String(value || "").trim();
+      const word = data.words.find(item => item.zh === text || normalizeText(item.zh) === normalizeText(text));
+      if (word) return word.en;
+      const map = {
+        "一份天气预报": "a weather report",
+        "一道菜的步骤": "the steps for a dish",
+        "没有关联的单词列表": "an unrelated word list",
+        "文章没有给出任何结果。": "The article gives no result.",
+        "文章只是在罗列词汇。": "The article only lists words.",
+        "主人公去了外太空旅行。": "The main character traveled to space.",
+        "文章主要介绍烹饪工具。": "The article mainly introduces cooking tools.",
+        "没有任何变化发生。": "No change happened.",
+        "主要变化来自天气预报。": "The main change came from a weather report.",
+        "文章只讨论数字统计。": "The article only discusses statistics."
+      };
+      if (map[text]) return map[text];
+      if (/[\u3400-\u9fff]/.test(text)) return "This detail is supported by the article.";
+      return text;
+    }
+
+    function takeEvenlyFromBuckets(buckets, count) {
+      const queues = buckets.map(bucket => shuffle(bucket));
+      const result = [];
+      let cursor = 0;
+      while (result.length < count && queues.some(queue => queue.length)) {
+        const queue = queues[cursor % queues.length];
+        if (queue.length) result.push(queue.shift());
+        cursor += 1;
+      }
+      return result;
+    }
+
+    async function fetchAiCauseEffectQuestions() {
+      try {
+        const response = await fetch("/api/cause-effect", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            article: data.article,
+            words: data.words
+          })
+        });
+        if (!response.ok) return [];
+        const payload = await response.json();
+        return normalizeAiCauseEffectQuestions(payload.questions || []);
+      } catch {
+        return [];
+      }
+    }
+
+    function normalizeAiCauseEffectQuestions(items) {
+      return items.map(item => {
+        const answer = String(item.answer || "").trim();
+        const wrongs = Array.isArray(item.wrongOptions) ? item.wrongOptions.map(option => String(option || "").trim()).filter(Boolean) : [];
+        if (!item.question || !answer || wrongs.length < 2) return null;
+        return {
+          type: "原因结果题",
+          source: "article",
+          mode: "choice",
+          word: "",
+          title: String(item.question).trim(),
+          meta: `AI 生成 · 线索词：${item.signal || "AI"}`,
+          context: String(item.context || "").trim(),
+          answer,
+          options: makeOptions(answer, wrongs.slice(0, 3)),
+          explanation: `原因：${item.cause || ""}；结果：${item.effect || ""}。`
+        };
+      }).filter(Boolean);
+    }
+
+    async function fetchAiMixedQuestions(count, difficulty) {
+      try {
+        const response = await fetch("/api/ai-questions", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            article: data.article,
+            words: data.words,
+            count,
+            difficulty
+          })
+        });
+        const payload = await response.json();
+        if (!response.ok) {
+          return [];
+        }
+        const normalized = normalizeAiMixedQuestions(payload.questions || [], difficulty);
+        return normalized;
+      } catch {
+        return [];
+      }
+    }
+
+    function normalizeAiMixedQuestions(items, difficulty = "low") {
+      return items.map(item => {
+        if (item.kind === "order") {
+          const steps = Array.isArray(item.steps) ? item.steps.map(step => String(step || "").trim()).filter(Boolean) : [];
+          if (steps.length < 2) return null;
+          return {
+            type: item.type || "AI 排序题",
+            source: "article",
+            mode: "order",
+            word: "",
+            title: item.question || "请把下面内容按正确顺序排列。",
+            meta: "AI 生成 · 交互排序",
+            context: difficulty === "high" ? "" : (item.context || ""),
+            steps,
+            orderItems: shuffle(steps),
+            answer: steps.join(" -> "),
+            explanation: item.explanation || `正确顺序是：${steps.join(" -> ")}`
+          };
+        }
+
+        const answer = String(item.answer || "").trim();
+        const options = Array.isArray(item.options) ? item.options.map(option => String(option || "").trim()).filter(Boolean) : [];
+        const isTrueFalse = item.kind === "trueFalse";
+        const useEnglishTrueFalse = ["medium", "high"].includes(difficulty);
+        const normalizedAnswer = isTrueFalse ? normalizeTrueFalseOption(answer, useEnglishTrueFalse) : answer;
+        const normalizedOptions = isTrueFalse ? (useEnglishTrueFalse ? ["True", "False"] : ["正确", "错误"]) : options;
+        if (!item.question || !normalizedAnswer || normalizedOptions.length < 2) return null;
+        return {
+          type: item.type || (isTrueFalse ? "AI 判断题" : "AI 选择题"),
+          source: "article",
+          mode: "choice",
+          word: "",
+          title: String(item.question).trim(),
+          meta: isTrueFalse ? "AI 生成 · 判断题" : "AI 生成 · 选择题",
+          context: difficulty === "high" ? "" : (item.context || ""),
+          answer: normalizedAnswer,
+          options: makeOptions(normalizedAnswer, normalizedOptions.filter(option => option !== normalizedAnswer).slice(0, 3)),
+          explanation: item.explanation || `正确答案：${normalizedAnswer}`
+        };
+      }).filter(Boolean).filter(item => articleLanguageValid(item, difficulty));
+    }
+
+    function articleLanguageValid(item, difficulty) {
+      if (difficulty !== "high") return true;
+      const text = [
+        item.title,
+        item.answer,
+        ...(Array.isArray(item.options) ? item.options : []),
+        ...(Array.isArray(item.steps) ? item.steps : [])
+      ].join(" ");
+      return !/[\u3400-\u9fff]/.test(text);
+    }
+
+    function normalizeTrueFalseOption(value, english = false) {
+      const clean = String(value || "").trim().toLowerCase();
+      if (["true", "t", "yes", "正确", "对"].includes(clean)) return english ? "True" : "正确";
+      if (["false", "f", "no", "错误", "错"].includes(clean)) return english ? "False" : "错误";
+      return String(value || "").trim();
+    }
+
+    function buildMatchQuestions(words, difficulty = "low") {
+      const questions = [];
+      const matchWords = shuffle(words).filter(word => word.en && word.zh);
+      const groupSize = difficulty === "high" ? 5 : 4;
+      for (let index = 0; index < matchWords.length; index += groupSize) {
+        const pairs = matchWords.slice(index, index + groupSize).map(word => ({ en: word.en, zh: word.zh }));
+        if (pairs.length < 2) continue;
+        questions.push({
+          type: difficulty === "high" ? "高阶配对题" : "连连看配对",
+          source: "word",
+          mode: "match",
+          word: "",
+          title: "把英文单词拖到正确的中文意思上。",
+          meta: difficulty === "high" ? "高难度会增加配对数量，注意区分相近词义。" : "左边是英文单词，右边是中文意思。也可以先点英文，再点中文目标区。",
+          pairs,
+          terms: shuffle(pairs.map(pair => pair.en)),
+          meanings: shuffle(pairs.map(pair => pair.zh)),
+          answer: formatMatchPairs(pairs),
+          explanation: "完成英文单词和中文意思的一一配对。"
+        });
+      }
+      return questions;
+    }
+
+    function buildCauseEffectQuestions(sentences) {
+      const cleanSentences = sentences.length ? sentences : splitSentences(data.article);
+      const relationships = cleanSentences
+        .map(parseCauseEffect)
+        .filter(Boolean)
+        .filter(item => item.cause.length > 8 && item.effect.length > 8);
+
+      return relationships.slice(0, 6).map((item, index) => {
+        const askCause = index % 2 === 0;
+        const answer = askCause ? item.cause : item.effect;
+        const wrongs = makeCauseEffectWrongs(answer, cleanSentences, askCause);
+        return {
+          type: "原因结果题",
+          source: "article",
+          mode: "choice",
+          word: "",
+          title: askCause ? `为什么会发生：${summarizeSentence(item.effect, 72)}？` : `因为 ${summarizeSentence(item.cause, 72)}，后来发生了什么？`,
+          meta: `线索词：${item.signal}`,
+          context: summarizeSentence(item.sentence, 180),
+          answer,
+          options: makeOptions(answer, wrongs),
+          explanation: `原句使用 “${item.signal}” 连接原因和结果。原因：${item.cause}；结果：${item.effect}。`
+        };
+      });
+    }
+
+    function parseCauseEffect(sentence) {
+      const clean = stripSentenceEnd(sentence);
+      let match = clean.match(/^because\s+(.+?),\s*(.+)$/i);
+      if (match) {
+        return normalizeCauseEffect("because", match[1], match[2], sentence);
+      }
+
+      match = clean.match(/^since\s+(.+?),\s*(.+)$/i);
+      if (match) {
+        return normalizeCauseEffect("since", match[1], match[2], sentence);
+      }
+
+      match = clean.match(/^after\s+(.+?),\s*(.+)$/i);
+      if (match) {
+        return normalizeCauseEffect("after", match[1], match[2], sentence);
+      }
+
+      match = clean.match(/^when\s+(.+?),\s*(.+)$/i);
+      if (match) {
+        return normalizeCauseEffect("when", match[1], match[2], sentence);
+      }
+
+      match = clean.match(/(.+?)\s*,?\s+so\s+(.+)$/i);
+      if (match) {
+        return normalizeCauseEffect("so", match[1], match[2], sentence);
+      }
+
+      match = clean.match(/(.+?)\s*,?\s+(?:therefore|as a result)\s*,?\s+(.+)$/i);
+      if (match) {
+        return normalizeCauseEffect(match[0].toLowerCase().includes("therefore") ? "therefore" : "as a result", match[1], match[2], sentence);
+      }
+
+      return null;
+    }
+
+    function normalizeCauseEffect(signal, cause, effect, sentence) {
+      const normalizedCause = cleanupClause(cause);
+      const normalizedEffect = cleanupClause(effect);
+      if (!normalizedCause || !normalizedEffect || normalizedCause === normalizedEffect) return null;
+      return {
+        signal,
+        cause: normalizedCause,
+        effect: normalizedEffect,
+        sentence
+      };
+    }
+
+    function cleanupClause(value) {
+      return stripSentenceEnd(String(value || "")
+        .replace(/^\s*(because|since|after|when|so|therefore|as a result)\s*,?\s*/i, "")
+        .replace(/\s+/g, " ")
+        .trim());
+    }
+
+    function stripSentenceEnd(value) {
+      return String(value || "").trim().replace(/[.!?。！？]+$/g, "").trim();
+    }
+
+    function makeCauseEffectWrongs(answer, sentences, askCause) {
+      const parsedClauses = sentences
+        .map(parseCauseEffect)
+        .filter(Boolean)
+        .map(item => askCause ? item.cause : item.effect);
+      const sentenceClauses = sentences
+        .map(sentence => summarizeSentence(stripSentenceEnd(sentence), 88))
+        .filter(Boolean);
+      const fallback = askCause
+        ? ["The weather suddenly changed", "The story does not give a clear reason", "Someone forgot the plan"]
+        : ["Nothing changed after that", "The story ended immediately", "They stopped working on the problem"];
+      return shuffle([...new Set([...parsedClauses, ...sentenceClauses, ...fallback])]
+        .filter(item => item && item !== answer))
+        .slice(0, 3);
+    }
+
+    function buildReadingQuestions(sentences) {
+      const questions = [];
+      const cleanSentences = sentences.length ? sentences : splitSentences(data.article);
+      if (!cleanSentences.length) return questions;
+      const articleText = data.article.trim();
+      const matchedWords = data.words.filter(word => wordPattern(word).test(articleText));
+      const first = cleanSentences[0];
+      const last = cleanSentences[cleanSentences.length - 1];
+      const middle = cleanSentences[Math.floor(cleanSentences.length / 2)] || first;
+      const subject = extractSubject(first);
+      const locationSentence = cleanSentences.find(sentence => /\b(in|at|near|inside|around|from)\b/i.test(sentence)) || first;
+      const changeSentence = cleanSentences.find(sentence => /\b(after|because|so|helped|became|improved|discovered|learned|found)\b/i.test(sentence)) || last;
+
+      questions.push({
+        type: "阅读细节题",
+        source: "article",
+        mode: "choice",
+        word: "",
+        title: subject ? `文章开头主要提到谁？` : "文章开头主要讲了什么？",
+        context: summarizeSentence(first, 140),
+        answer: subject || summarizeSentence(first),
+        options: makeOptions(subject || summarizeSentence(first), shuffle([
+          "一份天气预报",
+          "一道菜的步骤",
+          "没有关联的单词列表",
+          summarizeSentence(middle),
+          summarizeSentence(last)
+        ]).filter(Boolean).slice(0, 3)),
+        explanation: `文章第一句是：${first}`
+      });
+
+      questions.push({
+        type: "阅读理解题",
+        source: "article",
+        mode: "choice",
+        word: "",
+        title: "下面哪一句最接近文章的结尾信息？",
+        context: summarizeSentence(last, 140),
+        answer: summarizeSentence(last),
+        options: makeOptions(summarizeSentence(last), shuffle([
+          summarizeSentence(first),
+          summarizeSentence(middle),
+          "文章没有给出任何结果。",
+          "文章只是在罗列词汇。"
+        ]).filter(Boolean).slice(0, 3)),
+        explanation: `文章结尾句是：${last}`
+      });
+
+      if (locationSentence !== first || cleanSentences.length > 1) {
+        questions.push({
+          type: "阅读定位题",
+          source: "article",
+          mode: "choice",
+          word: "",
+          title: "根据文章，下面哪一项是文中出现过的细节？",
+          context: summarizeSentence(locationSentence, 140),
+          answer: summarizeSentence(locationSentence),
+          options: makeOptions(summarizeSentence(locationSentence), shuffle([
+            summarizeSentence(first),
+            summarizeSentence(last),
+            "主人公去了外太空旅行。",
+            "文章主要介绍烹饪工具。"
+          ]).filter(Boolean).slice(0, 3)),
+          explanation: `可从原文找到：${locationSentence}`
+        });
+      }
+
+      if (changeSentence) {
+        questions.push({
+          type: "阅读推断题",
+          source: "article",
+          mode: "choice",
+          word: "",
+          title: "文章更强调哪一种变化或原因？",
+          context: summarizeSentence(changeSentence, 140),
+          answer: summarizeSentence(changeSentence),
+          options: makeOptions(summarizeSentence(changeSentence), shuffle([
+            summarizeSentence(first),
+            "没有任何变化发生。",
+            "主要变化来自天气预报。",
+            "文章只讨论数字统计。"
+          ]).filter(Boolean).slice(0, 3)),
+          explanation: `这道题来自句子：${changeSentence}`
+        });
+      }
+
+      matchedWords.slice(0, 4).forEach(word => {
+        const sentence = cleanSentences.find(item => wordPattern(word).test(item)) || first;
+        questions.push({
+          type: "阅读词义题",
+          source: "article",
+          mode: "choice",
+          word: "",
+          title: `文章中 “${word.en}” 最接近哪个中文意思？`,
+          meta: `词表提示：${word.en}`,
+          context: replaceWordInSentence(sentence, word),
+          answer: word.zh,
+          options: makeOptions(word.zh, pickWrongMeanings(word.zh, 3)),
+          explanation: `原句是：${sentence}。词表中 “${word.en}” 的意思是“${word.zh}”。`,
+          memoryWord: word
+        });
+      });
+
+      return questions;
+    }
+
+    function summarizeSentence(sentence, limit = 64) {
+      const clean = String(sentence || "").trim();
+      if (!clean) return "";
+      return clean.length > limit ? `${clean.slice(0, limit)}...` : clean;
+    }
+
+    function extractSubject(sentence) {
+      const match = String(sentence || "").match(/\b([A-Z][a-z]+)\b/);
+      return match ? match[1] : "";
+    }
+
+    function startMemoryTraining() {
+      const due = dueMemoryItems();
+      if (!due.length) {
+        alert("现在没有待复习内容。答错的单词和题目会自动进入抗遗忘训练。");
+        return;
+      }
+
+      activeMode = "memory";
+      quiz = shuffle(due).slice(0, 16).map(item => memoryItemToQuestion(item)).filter(Boolean);
+      if (!quiz.length) {
+        alert("当前复习内容太旧，缺少可练习的题目数据。请先完成一组新测试。");
+        return;
+      }
+      currentIndex = 0;
+      answers = new Array(quiz.length).fill(null);
+      quizStartedAt = Date.now();
+      currentSessionId = `memory-${quizStartedAt}`;
+      switchScreen("practice");
+      renderQuestion();
+      renderLiveStats();
+    }
+
+    function memoryItemToQuestion(item) {
+      if (item.kind === "mistake" && item.question) {
+        return {
+          ...item.question,
+          type: `错题抗遗忘 第 ${(item.stage || 0) + 1} 轮`,
+          reviewId: item.reviewId
+        };
+      }
+
+      if (!item.en) return null;
+      return {
+        type: `抗遗忘训练 第 ${(item.stage || 0) + 1} 轮`,
+        mode: "choice",
+        source: "word",
+        word: item.en,
+        title: `请选择 “${item.en}” 的中文意思。`,
+        answer: item.zh,
+        options: makeOptions(item.zh, pickWrongMeanings(item.zh, 3)),
+        explanation: `复习词 “${item.en}” 的中文意思是“${item.zh}”。`,
+        memoryWord: { en: item.en, zh: item.zh }
+      };
+    }
+
+    function dueMemoryItems() {
+      const now = Date.now();
+      return data.memory.filter(item => (item.stage || 0) < 3 && Number(item.nextAt || 0) <= now);
+    }
+
+    function addMemoryWord(word) {
+      if (!word || !word.en) return;
+      const found = data.memory.find(item => normalizeText(item.en) === normalizeText(word.en));
+      if (found) {
+        found.stage = 0;
+        found.nextAt = Date.now();
+        found.wrong += 1;
+        found.updatedAt = Date.now();
+        return;
+      }
+      data.memory.unshift({
+        kind: "word",
+        en: word.en,
+        zh: word.zh,
+        stage: 0,
+        wrong: 1,
+        nextAt: Date.now(),
+        createdAt: Date.now(),
+        updatedAt: Date.now()
+      });
+    }
+
+    function addMistakeToMemory(mistake) {
+      if (!mistake || !mistake.reviewQuestion) return;
+      const reviewId = mistake.reviewId || `mistake-${Date.now()}`;
+      const found = data.memory.find(item => item.reviewId === reviewId);
+      if (found) {
+        found.stage = 0;
+        found.nextAt = Date.now();
+        found.wrong = (found.wrong || 0) + 1;
+        found.question = mistake.reviewQuestion;
+        found.updatedAt = Date.now();
+        return;
+      }
+      data.memory.unshift({
+        kind: "mistake",
+        reviewId,
+        title: mistake.title,
+        source: mistake.source,
+        question: mistake.reviewQuestion,
+        stage: 0,
+        wrong: 1,
+        nextAt: Date.now(),
+        createdAt: Date.now(),
+        updatedAt: Date.now()
+      });
+    }
+
+    function updateMemoryAfterAnswer(target, correct) {
+      if (!target) return;
+      let found = null;
+      if (target.reviewId) {
+        found = data.memory.find(item => item.reviewId === target.reviewId);
+      } else if (target.en) {
+        found = data.memory.find(item => normalizeText(item.en) === normalizeText(target.en));
+      }
+      if (!found) {
+        if (target.en) {
+          addMemoryWord(target);
+          found = data.memory.find(item => normalizeText(item.en) === normalizeText(target.en));
+        }
+        if (!found) return;
+      }
+
+      if (correct) {
+        const delays = [60 * 1000, 5 * 60 * 1000, 30 * 60 * 1000, 24 * 60 * 60 * 1000];
+        found.stage = Math.min(3, found.stage + 1);
+        found.nextAt = Date.now() + delays[found.stage];
+      } else {
+        found.stage = 0;
+        found.nextAt = Date.now();
+        found.wrong += 1;
+      }
+      found.updatedAt = Date.now();
+    }
+
+    function recordMistake(q, userAnswer, explanation) {
+      const reviewId = q.reviewId || `mistake-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      const mistake = {
+        id: `mistake-log-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        reviewId,
+        source: q.source || activeQuizKind,
+        mode: q.mode || "choice",
+        type: q.type,
+        title: q.title,
+        answer: q.answer,
+        userAnswer,
+        explanation: explanation || q.explanation || "",
+        time: new Date().toLocaleString(),
+        createdAt: Date.now(),
+        reviewQuestion: makeReviewQuestion(q)
+      };
+      data.mistakes.unshift(mistake);
+      data.mistakes = data.mistakes.slice(0, 120);
+      addMistakeToMemory(mistake);
+    }
+
+    function makeReviewQuestion(q) {
+      const base = {
+        source: q.source || activeQuizKind,
+        mode: q.mode || "choice",
+        word: q.word || "",
+        title: q.title,
+        meta: q.meta || "",
+        context: q.context || "",
+        answer: q.answer || "",
+        explanation: q.explanation || "",
+        memoryWord: q.memoryWord || null
+      };
+
+      if (q.mode === "order") {
+        return {
+          ...base,
+          type: q.type || "错题排序题",
+          steps: Array.isArray(q.steps) ? [...q.steps] : [],
+          orderItems: shuffle(Array.isArray(q.steps) ? q.steps : [])
+        };
+      }
+
+      if (q.mode === "match") {
+        const pairs = Array.isArray(q.pairs) ? q.pairs.map(pair => ({ en: pair.en, zh: pair.zh })) : [];
+        return {
+          ...base,
+          type: q.type || "错题配对题",
+          pairs,
+          terms: shuffle(pairs.map(pair => pair.en)),
+          meanings: shuffle(pairs.map(pair => pair.zh)),
+          answer: q.answer || formatMatchPairs(pairs)
+        };
+      }
+
+      return {
+        ...base,
+        type: q.type || "错题选择题",
+        options: Array.isArray(q.options) ? [...q.options] : makeOptions(q.answer, pickGenericWrongOptions(q.answer, 3))
+      };
+    }
+
+    function pickGenericWrongOptions(answer, count) {
+      const pool = [
+        ...data.words.map(word => word.zh),
+        ...data.words.map(word => word.en),
+        "正确",
+        "错误",
+        "文章没有给出这个信息",
+        "这个选项与原文无关"
+      ].filter(item => item && normalizeText(item) !== normalizeText(answer));
+      return shuffle([...new Set(pool)]).slice(0, count);
+    }
+
+    function escapeRegExp(value) {
+      return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    function renderQuestion() {
+      els.totalQuestions.textContent = quiz.length;
+      if (!quiz.length) {
+        els.quizArea.className = "card empty";
+        els.quizArea.innerHTML = `<div><h2>请先生成测试</h2><p>测试会在这里以大题目、大选项显示。</p></div>`;
+        return;
+      }
+
+      const q = quiz[currentIndex];
+      const userAnswer = answers[currentIndex];
+      const isCorrect = Boolean(userAnswer && userAnswer.correct);
+      const isArticleQuestion = q.source === "article";
+      els.quizArea.className = `card question-card ${isArticleQuestion ? "article-question" : "word-question"}`;
+      els.quizArea.innerHTML = `
+        <div class="question-head">
+          <div>
+            <div class="question-kind">
+              <span class="badge source-badge ${isArticleQuestion ? "article" : "word"}">${isArticleQuestion ? "文章题" : "单词题"}</span>
+              <span class="badge">${escapeHtml(q.type)}</span>
+            </div>
+            ${q.word ? `<div class="big-word">${escapeHtml(q.word)}</div>` : ""}
+            <div class="question-title">${escapeHtml(q.title)}</div>
+            ${q.meta ? `<div class="question-meta">${escapeHtml(q.meta)}</div>` : ""}
+            ${q.context ? `<div class="article-context">${escapeHtml(q.context)}</div>` : ""}
+          </div>
+          <span class="badge">${currentIndex + 1} / ${quiz.length}</span>
+        </div>
+        ${renderQuestionBody(q, userAnswer)}
+        <div class="shortcut-hint">${questionHint(q)}</div>
+        <div class="explain ${userAnswer ? "show" : ""} ${userAnswer ? (isCorrect ? "good" : "bad") : ""}">
+          <strong>${userAnswer ? (isCorrect ? "回答正确" : "回答错误") : ""}</strong>
+          ${userAnswer ? `<p>正确答案：${escapeHtml(q.answer)}</p>${q.mode === "match" || q.mode === "order" ? `<p>得分：${answerMatchScore(userAnswer)}</p>` : ""}<p>${escapeHtml(q.explanation)}</p>` : ""}
+        </div>
+        <div class="navline">
+          <div class="progress-wrap"><div class="progress" style="width:${((currentIndex + 1) / quiz.length) * 100}%"></div></div>
+          <button class="btn secondary" id="prevBtn">上一题</button>
+          <button class="btn" id="checkBtn">${userAnswer ? "已提交" : "提交答案"}</button>
+          <button class="btn secondary" id="nextBtn">${currentIndex === quiz.length - 1 ? "完成" : "下一题"}</button>
+        </div>
+      `;
+
+      document.querySelectorAll(".option").forEach(btn => {
+        btn.addEventListener("click", () => {
+          if (answers[currentIndex]) return;
+          document.querySelectorAll(".option").forEach(item => item.classList.remove("selected"));
+          btn.classList.add("selected");
+        });
+      });
+      if (q.mode === "match" && !userAnswer) bindMatchInteractions();
+      if (q.mode === "order" && !userAnswer) bindOrderInteractions();
+      document.querySelector("#prevBtn").addEventListener("click", () => {
+        currentIndex = Math.max(0, currentIndex - 1);
+        renderQuestion();
+      });
+      document.querySelector("#nextBtn").addEventListener("click", () => {
+        if (!answers[currentIndex] && !submitCurrentSelection()) return;
+        if (currentIndex < quiz.length - 1) {
+          currentIndex += 1;
+          renderQuestion();
+        } else {
+          showResultSummary();
+        }
+      });
+      document.querySelector("#checkBtn").addEventListener("click", submitAnswer);
+    }
+
+    function renderQuestionBody(q, userAnswer) {
+      if (q.mode === "match") return renderMatchQuestion(q, userAnswer);
+      if (q.mode === "order") return renderOrderQuestion(q, userAnswer);
+      return renderOptions(q, userAnswer);
+    }
+
+    function questionHint(q) {
+      if (q.mode === "match") return "操作：拖动英文到中文意思上，也可以点英文，再点中文目标区。Enter 提交或下一题，← → 切换题目。";
+      if (q.mode === "order") return "操作：用 ↑ ↓ 调整顺序。Enter 提交或下一题，← → 切换题目。";
+      return "快捷键：A/B/C/D 选择，Enter 提交或下一题，← → 切换题目。";
+    }
+
+    function renderOptions(q, userAnswer) {
+      return `<div class="options">
+        ${q.options.map((option, index) => {
+          const selected = userAnswer && userAnswer.value === option;
+          const correct = userAnswer && option === q.answer;
+          const wrong = userAnswer && selected && option !== q.answer;
+          return `<button class="option ${selected ? "selected" : ""} ${correct ? "correct" : ""} ${wrong ? "wrong" : ""}" data-value="${escapeHtml(option)}">
+            <span class="letter">${String.fromCharCode(65 + index)}</span>
+            <span class="option-text">${escapeHtml(option)}</span>
+          </button>`;
+        }).join("")}
+      </div>`;
+    }
+
+    function renderMatchQuestion(q, userAnswer) {
+      const assignments = userAnswer?.matches || [];
+      const assignedMap = new Map(assignments.map(item => [item.zh, item.en]));
+      const assignedTerms = new Set(assignments.map(item => item.en).filter(Boolean));
+      const terms = userAnswer ? q.pairs.map(pair => pair.en).filter(en => !assignedTerms.has(en)) : (q.terms || q.pairs.map(pair => pair.en));
+      const meanings = q.meanings || q.pairs.map(pair => pair.zh);
+      return `
+        <div class="match-board" data-match-board>
+          <section class="match-column">
+            <div class="match-column-title">
+              <span>英文单词</span>
+              <span class="badge">${terms.length} 个待配对</span>
+            </div>
+            <div class="match-pool" data-match-pool>
+              ${terms.map(en => renderMatchChip(en, !userAnswer)).join("")}
+            </div>
+          </section>
+          <section class="match-column">
+            <div class="match-column-title">
+              <span>中文意思</span>
+              <span class="badge">放到这里</span>
+            </div>
+            <div class="match-targets">
+              ${meanings.map(zh => {
+                const assignedEn = assignedMap.get(zh) || "";
+                const pair = q.pairs.find(item => item.zh === zh);
+                const state = userAnswer ? (normalizeText(assignedEn) === normalizeText(pair?.en || "") ? "correct" : "wrong") : "";
+                return `<div class="match-target ${state}" data-zh="${escapeHtml(zh)}">
+                  <div class="match-meaning">${escapeHtml(zh)}</div>
+                  <div class="match-slot" data-slot>${assignedEn ? renderMatchChip(assignedEn, false, true) : "拖入英文"}</div>
+                </div>`;
+              }).join("")}
+            </div>
+          </section>
+        </div>
+        ${userAnswer ? `<div class="match-score">配对得分：${answerMatchScore(userAnswer)}</div>` : ""}
+      `;
+    }
+
+    function renderMatchChip(en, draggable = true, locked = false) {
+      return `<button class="match-chip ${locked ? "locked" : ""}" type="button" data-en="${escapeHtml(en)}" ${draggable ? "draggable=\"true\"" : ""}>${escapeHtml(en)}</button>`;
+    }
+
+    function renderOrderQuestion(q, userAnswer) {
+      const items = userAnswer?.items || q.orderItems || q.steps || [];
+      return `<div class="order-list" data-order-list>
+        ${items.map((item, index) => {
+          const expected = q.steps?.[index] || "";
+          const state = userAnswer ? (normalizeText(item) === normalizeText(expected) ? "correct" : "wrong") : "";
+          return `<div class="order-item ${state}" data-order-item data-value="${escapeHtml(item)}">
+            <span class="order-index">${index + 1}</span>
+            <span class="order-text">${escapeHtml(item)}</span>
+            <span class="order-actions">
+              <button class="order-move" type="button" data-dir="-1" ${userAnswer ? "disabled" : ""}>↑</button>
+              <button class="order-move" type="button" data-dir="1" ${userAnswer ? "disabled" : ""}>↓</button>
+            </span>
+          </div>`;
+        }).join("")}
+      </div>`;
+    }
+
+    function bindOrderInteractions() {
+      const list = document.querySelector("[data-order-list]");
+      if (!list) return;
+      list.querySelectorAll(".order-move").forEach(button => {
+        button.addEventListener("click", () => {
+          const item = button.closest("[data-order-item]");
+          const direction = Number(button.dataset.dir || 0);
+          if (!item || !direction) return;
+          animateOrderMove(list, () => {
+            if (direction < 0 && item.previousElementSibling) {
+              list.insertBefore(item, item.previousElementSibling);
+            }
+            if (direction > 0 && item.nextElementSibling) {
+              list.insertBefore(item.nextElementSibling, item);
+            }
+            updateOrderIndexes(list);
+          });
+        });
+      });
+    }
+
+    function animateOrderMove(list, mutate) {
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const items = [...list.querySelectorAll("[data-order-item]")];
+      const first = new Map(items.map(item => [item, item.getBoundingClientRect()]));
+      mutate();
+      if (reduceMotion) return;
+      items.forEach(item => {
+        const before = first.get(item);
+        const after = item.getBoundingClientRect();
+        if (!before) return;
+        const deltaY = before.top - after.top;
+        if (!deltaY) return;
+        item.animate([
+          { transform: `translateY(${deltaY}px)` },
+          { transform: "translateY(0)" }
+        ], {
+          duration: 220,
+          easing: "cubic-bezier(0.22, 1, 0.36, 1)"
+        });
+      });
+    }
+
+    function updateOrderIndexes(list) {
+      list.querySelectorAll(".order-index").forEach((item, index) => {
+        item.textContent = index + 1;
+      });
+    }
+
+    function bindMatchInteractions() {
+      const board = document.querySelector("[data-match-board]");
+      if (!board) return;
+      let selectedChip = null;
+
+      const clearSelection = () => {
+        board.querySelectorAll(".match-chip.selected").forEach(item => item.classList.remove("selected"));
+        selectedChip = null;
+      };
+
+      board.querySelectorAll(".match-chip").forEach(chip => {
+        chip.addEventListener("dragstart", event => {
+          chip.classList.add("dragging");
+          event.dataTransfer.setData("text/plain", chip.dataset.en || "");
+          event.dataTransfer.effectAllowed = "move";
+        });
+        chip.addEventListener("dragend", () => chip.classList.remove("dragging"));
+        chip.addEventListener("click", () => {
+          if (chip.closest(".match-slot")) return;
+          if (selectedChip === chip) {
+            clearSelection();
+            return;
+          }
+          clearSelection();
+          selectedChip = chip;
+          chip.classList.add("selected");
+        });
+      });
+
+      board.querySelectorAll(".match-target").forEach(target => {
+        target.addEventListener("dragover", event => {
+          event.preventDefault();
+          target.classList.add("drag-over");
+        });
+        target.addEventListener("dragleave", () => target.classList.remove("drag-over"));
+        target.addEventListener("drop", event => {
+          event.preventDefault();
+          target.classList.remove("drag-over");
+          const en = event.dataTransfer.getData("text/plain");
+          const chip = board.querySelector(`.match-chip[data-en="${cssEscapeValue(en)}"]`);
+          if (chip) placeMatchChip(chip, target);
+        });
+        target.addEventListener("click", () => {
+          if (!selectedChip) return;
+          placeMatchChip(selectedChip, target);
+          clearSelection();
+        });
+      });
+    }
+
+    function placeMatchChip(chip, target) {
+      const pool = document.querySelector("[data-match-pool]");
+      const slot = target.querySelector("[data-slot]");
+      const currentChip = slot.querySelector(".match-chip");
+      const originSlot = chip.closest("[data-slot]");
+      if (currentChip && pool) pool.appendChild(currentChip);
+      if (originSlot) originSlot.textContent = "拖入英文";
+      slot.textContent = "";
+      slot.appendChild(chip);
+      chip.classList.remove("selected", "dragging");
+    }
+
+    function formatMatchPairs(pairs) {
+      return pairs.map(pair => `${pair.en} = ${pair.zh}`).join("；");
+    }
+
+    function answerMatchScore(answer) {
+      if (!answer || !answer.total) return "";
+      return `${answer.correctCount || 0}/${answer.total}`;
+    }
+
+    function cssEscapeValue(value) {
+      if (window.CSS && typeof window.CSS.escape === "function") return CSS.escape(value);
+      return String(value).replace(/["\\]/g, "\\$&");
+    }
+
+    function handleQuizShortcut(event) {
+      const active = document.activeElement;
+      if (active && ["INPUT", "TEXTAREA", "SELECT"].includes(active.tagName)) return;
+      if (!quiz.length || !document.querySelector("#practice").classList.contains("active")) return;
+
+      const key = event.key.toLowerCase();
+      const optionIndex = { a: 0, b: 1, c: 2, d: 3, "1": 0, "2": 1, "3": 2, "4": 3 }[key];
+      if (optionIndex !== undefined && !answers[currentIndex] && !["match", "order"].includes(quiz[currentIndex]?.mode)) {
+        const options = document.querySelectorAll(".option");
+        if (options[optionIndex]) {
+          event.preventDefault();
+          options.forEach(item => item.classList.remove("selected"));
+          options[optionIndex].classList.add("selected");
+        }
+        return;
+      }
+
+      if (event.key === "Enter") {
+        event.preventDefault();
+        if (!answers[currentIndex]) {
+          if (!submitCurrentSelection()) return;
+          renderQuestion();
+        } else if (currentIndex < quiz.length - 1) {
+          currentIndex += 1;
+          renderQuestion();
+        } else {
+          showResultSummary();
+        }
+        return;
+      }
+
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        currentIndex = Math.max(0, currentIndex - 1);
+        renderQuestion();
+      }
+
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        if (!answers[currentIndex] && !submitCurrentSelection()) return;
+        if (currentIndex < quiz.length - 1) {
+          currentIndex += 1;
+          renderQuestion();
+        } else {
+          showResultSummary();
+        }
+      }
+    }
+
+    function submitAnswer() {
+      if (submitCurrentSelection()) {
+        renderQuestion();
+      }
+    }
+
+    function submitCurrentSelection() {
+      if (answers[currentIndex]) return true;
+      const q = quiz[currentIndex];
+      if (q.mode === "match") return submitMatchAnswer(q);
+      if (q.mode === "order") return submitOrderAnswer(q);
+      const selected = document.querySelector(".option.selected");
+      const value = selected ? selected.dataset.value : "";
+      if (!value.trim()) {
+        alert("请先选择答案。");
+        return false;
+      }
+
+      const correct = normalizeText(value) === normalizeText(q.answer);
+      answers[currentIndex] = { value, correct };
+      data.stats.answered += 1;
+      if (correct) data.stats.correct += 1;
+
+      if (activeMode === "memory") {
+        updateMemoryAfterAnswer(q.reviewId ? { reviewId: q.reviewId } : q.memoryWord, correct);
+      } else if (!correct) {
+        addMemoryWord(q.memoryWord);
+      }
+
+      if (!correct) {
+        recordMistake(q, value, q.explanation);
+      }
+
+      saveData();
+      renderLiveStats();
+      return true;
+    }
+
+    function submitOrderAnswer(q) {
+      const items = [...document.querySelectorAll("[data-order-item]")].map(item => item.dataset.value || "");
+      if (items.length < 2) {
+        alert("请先完成排序。");
+        return false;
+      }
+
+      const checks = items.map((item, index) => ({
+        item,
+        expected: q.steps?.[index] || "",
+        correct: normalizeText(item) === normalizeText(q.steps?.[index] || "")
+      }));
+      const correctCount = checks.filter(item => item.correct).length;
+      const total = checks.length;
+      const correct = correctCount === total;
+      const value = items.join(" -> ");
+      answers[currentIndex] = { value, correct, correctCount, total, items };
+      data.stats.answered += 1;
+      if (correct) data.stats.correct += 1;
+
+      if (activeMode === "memory") {
+        updateMemoryAfterAnswer(q.reviewId ? { reviewId: q.reviewId } : q.memoryWord, correct);
+      }
+
+      if (!correct) {
+        recordMistake(q, value, `本题排序得分：${correctCount}/${total}。${q.explanation}`);
+      }
+
+      saveData();
+      renderLiveStats();
+      return true;
+    }
+
+    function submitMatchAnswer(q) {
+      const assignments = [...document.querySelectorAll(".match-target")].map(target => {
+        const zh = target.dataset.zh || "";
+        const chip = target.querySelector(".match-chip");
+        const en = chip ? chip.dataset.en || "" : "";
+        const expected = q.pairs.find(pair => normalizeText(pair.zh) === normalizeText(zh));
+        return {
+          en,
+          zh,
+          expectedEn: expected?.en || "",
+          correct: Boolean(en && expected && normalizeText(en) === normalizeText(expected.en))
+        };
+      });
+
+      if (assignments.some(item => !item.en)) {
+        alert("请完成所有配对。");
+        return false;
+      }
+
+      const correctCount = assignments.filter(item => item.correct).length;
+      const total = assignments.length;
+      const correct = correctCount === total;
+      const value = assignments.map(item => `${item.en} → ${item.zh}`).join("；");
+      answers[currentIndex] = { value, correct, correctCount, total, matches: assignments };
+      data.stats.answered += 1;
+      if (correct) data.stats.correct += 1;
+
+      if (activeMode === "memory") {
+        updateMemoryAfterAnswer(q.reviewId ? { reviewId: q.reviewId } : q.memoryWord, correct);
+      }
+
+      if (!correct) {
+        assignments.filter(item => !item.correct).forEach(item => {
+          const word = q.pairs.find(pair => normalizeText(pair.en) === normalizeText(item.expectedEn));
+          if (word) addMemoryWord(word);
+        });
+        recordMistake(q, value, `本题配对得分：${correctCount}/${total}。${q.explanation}`);
+      }
+
+      saveData();
+      renderLiveStats();
+      return true;
+    }
+
+    function showResultSummary() {
+      const done = answers.filter(Boolean).length;
+      const correct = answers.filter(item => item && item.correct).length;
+      const rate = done ? Math.round(correct / done * 100) : 0;
+      const durationMs = quizStartedAt ? Date.now() - quizStartedAt : 0;
+      saveSessionSummary(done, correct, rate, durationMs);
+      els.quizArea.className = "card question-card";
+      els.quizArea.innerHTML = `
+        <div class="question-head">
+          <div>
+            <span class="badge">完成</span>
+            <div class="big-word">${activeMode === "memory" ? "Review" : "Test"}</div>
+            <div class="question-title">本次练习结果</div>
+            <div class="question-meta">已保存本次批次、答题统计、错题记录和抗遗忘进度。</div>
+          </div>
+        </div>
+        <div class="result-grid">
+          <div class="result-box"><strong>${done}</strong><span>已答题</span></div>
+          <div class="result-box"><strong>${correct}</strong><span>答对</span></div>
+          <div class="result-box"><strong>${rate}%</strong><span>正确率</span></div>
+        </div>
+        ${renderResultReview()}
+        <div class="shortcut-hint">本次用时：${formatDuration(durationMs)}</div>
+        <div class="actions">
+          <button class="btn" id="againBtn">${activeMode === "memory" ? "继续抗遗忘训练" : "重新生成测试"}</button>
+          <button class="btn secondary" id="configBtn">调整题目设置</button>
+          <button class="btn secondary" id="reviewBtn">查看错题本</button>
+        </div>
+      `;
+      document.querySelectorAll(".review-detail-toggle").forEach(button => {
+        button.addEventListener("click", () => {
+          const item = button.closest(".review-item");
+          if (!item) return;
+          const isOpen = item.classList.toggle("open");
+          button.textContent = isOpen ? "收起详情" : "查看详情";
+        });
+      });
+      document.querySelector("#againBtn").addEventListener("click", activeMode === "memory" ? startMemoryTraining : () => generateQuiz(activeQuizKind));
+      document.querySelector("#configBtn").addEventListener("click", () => switchScreen("config"));
+      document.querySelector("#reviewBtn").addEventListener("click", () => switchScreen("mistakes"));
+    }
+
+    function renderResultReview() {
+      const answeredItems = quiz
+        .map((q, index) => ({ q, answer: answers[index], index }))
+        .filter(item => item.answer);
+      if (!answeredItems.length) return "";
+      return `<div class="review-list">
+        ${answeredItems.map(({ q, answer, index }) => `
+          <div class="review-item ${answer.correct ? "correct" : "wrong"}">
+            <div class="review-title">
+              <div class="review-title-main">
+                <span>${index + 1}. ${escapeHtml(q.title)}</span>
+                <button class="review-detail-toggle" type="button">查看详情</button>
+              </div>
+              <span class="pill ${answer.correct ? "ok" : "warn"}">${q.mode === "match" ? answerMatchScore(answer) : (answer.correct ? "正确" : "错误")}</span>
+            </div>
+            <div class="review-details">
+              ${q.context ? `<div class="article-context">${escapeHtml(q.context)}</div>` : ""}
+              <div class="review-answer-grid">
+                <div class="review-answer"><strong>你的答案</strong>${escapeHtml(answer.value || "未作答")}</div>
+                <div class="review-answer"><strong>正确答案</strong>${escapeHtml(q.answer)}</div>
+              </div>
+              <div class="review-explanation"><strong>${answer.correct ? "答对原因" : "错误原因"}</strong><br>${escapeHtml(q.explanation || "这道题没有补充解析。")}</div>
+            </div>
+          </div>
+        `).join("")}
+      </div>`;
+    }
+
+    function saveSessionSummary(done, correct, rate, durationMs) {
+      if (!quiz.length || data.sessions.some(item => item.id === currentSessionId)) return;
+      data.sessions.unshift({
+        id: currentSessionId,
+        mode: activeMode,
+        time: new Date().toLocaleString(),
+        startedAt: quizStartedAt,
+        durationMs,
+        total: quiz.length,
+        answered: done,
+        correct,
+        rate,
+        questions: quiz.map((q, index) => ({
+          index: index + 1,
+          type: q.type,
+          title: q.title,
+          answer: q.answer,
+          userAnswer: answers[index]?.value || "",
+          correct: Boolean(answers[index]?.correct),
+          score: q.mode === "match" ? answerMatchScore(answers[index]) : ""
+        }))
+      });
+      data.sessions = data.sessions.slice(0, 30);
+      saveData();
+    }
+
+    function formatDuration(ms) {
+      const totalSeconds = Math.max(0, Math.round(ms / 1000));
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return minutes ? `${minutes}分${String(seconds).padStart(2, "0")}秒` : `${seconds}秒`;
+    }
+
+    function renderLiveStats() {
+      const done = answers.filter(Boolean).length;
+      const correct = answers.filter(item => item && item.correct).length;
+      els.liveScore.textContent = correct;
+      els.liveRate.textContent = `${done ? Math.round(correct / done * 100) : 0}%`;
+    }
+
+    function renderMeta() {
+      els.wordInput.value = data.words.map(word => `${word.en}, ${word.zh}`).join("\n");
+      els.articleInput.value = data.article;
+      els.wordCount.textContent = `${data.words.length} 个词`;
+      els.wordCountFeature.textContent = `${data.words.length} 个`;
+      els.wordCountImport.textContent = `${data.words.length} 个`;
+      els.articleStatus.textContent = data.article.trim() ? "已导入" : "未导入";
+      const wordHtml = data.words.length
+        ? data.words.map(word => `<div class="word-chip"><strong>${escapeHtml(word.en)}</strong><span>${escapeHtml(word.zh)}</span></div>`).join("")
+        : `<div class="word-chip"><span>暂无单词。</span></div>`;
+      els.wordList.innerHTML = wordHtml;
+      els.wordListImport.innerHTML = wordHtml;
+      renderMistakes();
+      renderStats();
+      renderMemory();
+    }
+
+    function renderMistakes() {
+      els.mistakeList.innerHTML = data.mistakes.length
+        ? data.mistakes.map(item => `
+          <div class="mistake-item">
+            <div><span class="pill warn">${escapeHtml(item.type)}</span> <span class="pill">${escapeHtml(item.time)}</span></div>
+            <strong>${escapeHtml(item.title)}</strong>
+            <div class="answer-line">
+              <span>你的答案：${escapeHtml(item.userAnswer)}</span>
+              <span>正确答案：${escapeHtml(item.answer)}</span>
+            </div>
+            <p>${escapeHtml(item.explanation)}</p>
+          </div>
+        `).join("")
+        : `<div class="empty"><div><h2>暂时没有错题</h2><p>学生提交错误答案后，会自动出现在这里。</p></div></div>`;
+    }
+
+    function renderStats() {
+      const { answered, correct } = data.stats;
+      const due = dueMemoryItems().length;
+      const mistakeDue = dueMemoryItems().filter(item => item.kind === "mistake").length;
+      els.statAnswered.textContent = answered;
+      els.statCorrect.textContent = correct;
+      els.statRate.textContent = `${answered ? Math.round(correct / answered * 100) : 0}%`;
+      if (els.statMistakes) els.statMistakes.textContent = data.mistakes.length;
+      if (els.statReviewDue) els.statReviewDue.textContent = due;
+      if (els.homeReviewHint) {
+        els.homeReviewHint.innerHTML = mistakeDue
+          ? `错题待练 ${mistakeDue} 题<br>点击查看统计`
+          : `答题数据可视化<br>学习进步看得见`;
+      }
+      els.articlePreview.textContent = data.article.trim() || "暂无文章内容。";
+      els.sessionList.innerHTML = data.sessions.length
+        ? data.sessions.slice(0, 8).map(item => `
+          <div class="session-item">
+            <div>
+              <strong>${escapeHtml(item.mode === "memory" ? "抗遗忘训练" : "单词测试")} · ${escapeHtml(item.time)}</strong>
+              <div class="session-meta">${item.total} 题 / 已答 ${item.answered} / 答对 ${item.correct} / 用时 ${formatDuration(item.durationMs || 0)}</div>
+            </div>
+            <span class="badge">${item.rate || 0}%</span>
+          </div>
+        `).join("")
+        : `<div class="empty"><div><h2>还没有测试批次</h2><p>完成一次测试后，这里会记录题目、用时和正确率。</p></div></div>`;
+    }
+
+    function renderMemory() {
+      const due = dueMemoryItems().length;
+      const mastered = data.memory.filter(item => item.stage >= 3).length;
+      els.memoryCount.textContent = `${due} 个待复习`;
+      els.dueCount.textContent = due;
+      els.memoryTotal.textContent = data.memory.length;
+      els.masteredCount.textContent = mastered;
+      if (els.mistakeReviewCount) {
+        els.mistakeReviewCount.textContent = dueMemoryItems().filter(item => item.kind === "mistake").length;
+      }
+    }
+
+    function switchScreen(id) {
+      document.querySelectorAll(".screen").forEach(screen => screen.classList.toggle("active", screen.id === id));
+      document.querySelectorAll(".tab").forEach(tab => tab.classList.toggle("active", tab.dataset.screen === id));
+      window.scrollTo(0, 0);
+      renderMeta();
+      if (id === "practice") renderQuestion();
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    document.querySelectorAll("[data-screen]").forEach(item => {
+      item.addEventListener("click", () => switchScreen(item.dataset.screen));
+    });
+    document.addEventListener("keydown", handleQuizShortcut);
+
+    document.querySelector("#openConfigBtn").addEventListener("click", () => switchScreen("config"));
+
+    document.querySelector("#saveWordsBtn").addEventListener("click", () => {
+      const words = parseWords(els.wordInput.value);
+      if (!words.length) {
+        alert("请按“英文, 中文”的格式导入单词。");
+        return;
+      }
+      data.words = words;
+      saveData();
+      switchScreen("home");
+    });
+
+    document.querySelector("#saveArticleBtn").addEventListener("click", () => {
+      data.article = els.articleInput.value.trim();
+      saveData();
+      switchScreen("home");
+    });
+
+    document.querySelector("#loadSampleBtn").addEventListener("click", () => {
+      data.words = sampleWords.map(([en, zh]) => ({ en, zh }));
+      data.article = sampleArticle;
+      saveData();
+    });
+
+    document.querySelector("#clearDataBtn").addEventListener("click", () => {
+      if (!confirm("确定清空单词和文章吗？错题本、统计和抗遗忘记录不会被清空。")) return;
+      data.words = [];
+      data.article = "";
+      quiz = [];
+      answers = [];
+      saveData();
+      renderQuestion();
+    });
+
+    document.querySelector("#generateWordBtn").addEventListener("click", () => generateQuiz("word"));
+    document.querySelector("#generateArticleBtn").addEventListener("click", () => generateQuiz("article"));
+    document.querySelector("#memoryBtn").addEventListener("click", startMemoryTraining);
+
+    document.querySelector("#clearMemoryBtn").addEventListener("click", () => {
+      if (!confirm("确定清空抗遗忘复习池吗？")) return;
+      data.memory = [];
+      saveData();
+    });
+
+    document.querySelector("#clearMistakesBtn").addEventListener("click", () => {
+      if (!confirm("确定清空错题本吗？")) return;
+      data.mistakes = [];
+      data.memory = data.memory.filter(item => item.kind !== "mistake");
+      saveData();
+    });
+
+    document.querySelector("#resetStatsBtn").addEventListener("click", () => {
+      if (!confirm("确定重置答题统计吗？")) return;
+      data.stats = { answered: 0, correct: 0 };
+      data.sessions = [];
+      saveData();
+    });
+
+    document.querySelector("#statsMemoryBtn").addEventListener("click", startMemoryTraining);
+
+    renderMeta();
+    renderQuestion();
+    loadServerData();
+  </script>
+</body>
+</html>
