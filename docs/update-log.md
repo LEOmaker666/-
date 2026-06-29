@@ -152,3 +152,24 @@
 
 - 当前目录还不是 Git 仓库，需要先上传到 GitHub，再连接 Render。
 - `DEEPSEEK_API_KEY` 只能放 Render 环境变量，不要写进前端 HTML，也不要提交到 GitHub。
+
+## 2026-06-29 18:56 CST
+
+### 用户状态
+
+- 用户已在 GitHub 创建空仓库，地址为 `https://github.com/LEOmaker666/-.git`。
+
+### 实际操作
+
+- 检查项目代码，未发现 DeepSeek API Key 被写入代码文件。
+- 初始化本地 Git 仓库。
+- 创建首次提交：`Initial word test app`。
+- 设置主分支为 `main`。
+- 添加远程仓库：`https://github.com/LEOmaker666/-.git`。
+- 已成功推送本地项目到 GitHub。
+
+### 后续步骤
+
+- 到 Render 创建 Web Service。
+- 连接 GitHub 仓库 `LEOmaker666/-`。
+- 在 Render Environment Variables 中填写 `DEEPSEEK_API_KEY`、`DEEPSEEK_MODEL`、`DEEPSEEK_BASE_URL`。
