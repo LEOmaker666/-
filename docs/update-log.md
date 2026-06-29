@@ -173,3 +173,57 @@
 - 到 Render 创建 Web Service。
 - 连接 GitHub 仓库 `LEOmaker666/-`。
 - 在 Render Environment Variables 中填写 `DEEPSEEK_API_KEY`、`DEEPSEEK_MODEL`、`DEEPSEEK_BASE_URL`。
+
+## 2026-06-29 19:01 CST
+
+### 用户问题
+
+- 询问是否可以把当前单页 HTML 应用改成 Next.js + React 前端架构，并使用 Tailwind 写 UI。
+- 用户询问迁移难度是否大。
+
+### 当前结论
+
+- 可以迁移，但不是“小改”，属于前端架构重构。
+- 当前版本是一个单 HTML + 原生 JS + Node 接口的应用；迁移后会拆成 Next.js 页面、React 组件、状态管理、API Routes 或独立服务、Tailwind 样式。
+- 建议不要在 Render 上线前临时大改；更稳妥的方式是先把当前版本部署成功，再开新分支迁移。
+
+## 2026-06-29 19:03 CST
+
+### 用户状态
+
+- 用户在 Render 创建 Web Service 时，看不到刚推送的 GitHub 仓库 `LEOmaker666/-`。
+
+### 判断
+
+- Render 当前连接的 GitHub Credentials 显示的是其他账号/组织的仓库，不是 `LEOmaker666`。
+- 因为仓库是 public，也可以不重新授权 GitHub，直接用 Render 的 `Public Git Repository` 方式部署。
+
+### 建议操作
+
+- 在 Render 的 Source Code 区域切换到 `Public Git Repository`。
+- 粘贴仓库地址：`https://github.com/LEOmaker666/-.git`
+- 继续配置 Web Service 和环境变量。
+
+## 2026-06-29 21:43 CST
+
+### 用户反馈
+
+- Render 部署后页面白屏，没有显示内容。
+
+### 排查结果
+
+- 本地访问根路径 `/` 可以返回 HTML。
+- 发现首页图片资源使用相对路径 `assets/...`。
+- 当页面从根路径 `/` 打开时，浏览器会请求 `/assets/...`，但真实资源在 `/outputs/assets/...`，导致资源 404。
+
+### 实际改动
+
+- 首页顶部 logo 路径改为 `/outputs/assets/logo-carlab-cropped.png`。
+- 首页主 logo 路径改为 `/outputs/assets/carlab_logo_transparent.webp`。
+- `server.js` 增加兼容映射：访问 `/assets/...` 时自动映射到 `/outputs/assets/...`。
+
+### 验证结果
+
+- `node --check server.js` 通过。
+- HTML 内联脚本语法检查通过。
+- 已确认 HTML 中主 logo 使用绝对资源路径。

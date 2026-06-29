@@ -302,7 +302,8 @@ function contentType(filePath) {
 
 function serveStatic(req, res) {
   const url = new URL(req.url, `http://${req.headers.host}`);
-  const pathname = decodeURIComponent(url.pathname === "/" ? "/outputs/word-test-app.html" : url.pathname);
+  const requestedPath = url.pathname.startsWith("/assets/") ? `/outputs${url.pathname}` : url.pathname;
+  const pathname = decodeURIComponent(requestedPath === "/" ? "/outputs/word-test-app.html" : requestedPath);
   const filePath = path.normalize(path.join(root, pathname));
   if (!filePath.startsWith(root)) {
     send(res, 403, "Forbidden", "text/plain; charset=utf-8");
